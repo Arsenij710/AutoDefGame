@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6815122843381855649}
   - component: {fileID: 5593665219272546116}
   - component: {fileID: 2065359897490071083}
+  - component: {fileID: 1234987730670060194}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -208,3 +209,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   _config: {fileID: 11400000, guid: 0e862b457515e19428106609827a38c3, type: 2}
+--- !u!114 &1234987730670060194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4886649696513142687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0726a5394816fe04492f96148d45362e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  _config: {fileID: 11400000, guid: 0e862b457515e19428106609827a38c3, type: 2}
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64

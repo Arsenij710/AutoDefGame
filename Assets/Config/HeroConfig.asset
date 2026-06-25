@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: HeroConfig
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
   baseMaxHealth: 100
-  baseDamage: 10
+  baseDamage: 30
   baseMoveSpeed: 5
-  attackCooldown: 1
-  attackRadius: 1.5
-  attackOffset: 1
+  attackCooldown: 1.5
+  attackRadius: 1.3
+  attackOffset: 0.5
