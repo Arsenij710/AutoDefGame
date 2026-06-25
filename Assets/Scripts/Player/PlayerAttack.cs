@@ -58,7 +58,6 @@ public class PlayerAttack : MonoBehaviour
         Gizmos.color = Color.red;
         Vector2 direction = _lastDirection;
 
-        // Если игра не запущена, рисуем зону просто справа от персонажа
         if (!Application.isPlaying) direction = Vector2.right;
 
         Vector2 attackPoint = (Vector2)transform.position + (direction * _config.attackOffset);

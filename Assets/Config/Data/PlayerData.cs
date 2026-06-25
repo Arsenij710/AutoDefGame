@@ -10,7 +10,7 @@ public class PlayerData : ScriptableObject
     public const int HealthBonusPerLevel = 20;
     public const int DamageBonusPerLevel = 3;
 
-    public float attackCooldown = 1.5f; 
+    public float attackCooldown = 2f; 
     public float attackRadius = 1.3f;
     public float attackOffset = 0.5f;
 }
