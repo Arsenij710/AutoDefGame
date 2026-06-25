@@ -1,14 +1,16 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private PlayerData _config;
 
-    private float _speed;
     private Animator _anim;
     private Rigidbody2D _rb;
     private SpriteRenderer _spriteRenderer;
     private Vector2 _direction;
+    private float _speed;
+    private bool _isFacingRight = true;
 
     void Start()
     {
@@ -26,18 +28,24 @@ public class PlayerMovement : MonoBehaviour
         _direction = new Vector2(dir_x, dir_y).normalized;
 
         bool isMoving = _direction.magnitude > 0;
-
         _anim.SetBool("isRun", isMoving);
 
-        if (dir_x > 0)
+        if (dir_x > 0 && !_isFacingRight)
         {
-            _spriteRenderer.flipX = false;
+            Flip();
         }
-        else if (dir_x < 0)
+        else if (dir_x < 0 && _isFacingRight)
         {
-            _spriteRenderer.flipX = true;
+            Flip();
+        }
+    }
+    private void Flip()
+    {
+        _isFacingRight = !_isFacingRight;
 
-        }
+        Vector3 curScale = transform.localScale;
+        curScale.x *= -1;
+        transform.localScale = curScale;
     }
     private void FixedUpdate()
     {
