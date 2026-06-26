@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
 
     private Animator _anim;
     private Rigidbody2D _rb;
-    private SpriteRenderer _spriteRenderer;
     private Vector2 _direction;
     private float _speed;
     private bool _isFacingRight = true;
@@ -17,7 +16,6 @@ public class PlayerMovement : MonoBehaviour
         _speed = _config.baseMoveSpeed;
 
         _rb = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         _anim = GetComponentInChildren<Animator>();
     }
 

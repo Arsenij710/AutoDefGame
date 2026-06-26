@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9345ee00ba5af784fa720f62218c1a56, type: 3}
+  m_Name: CrabConfig
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  EnemySprite: {fileID: -159299079651030013, guid: 7fa445e39c7ef624587e3b7fb23ff552, type: 3}
+  SpriteSize: {x: 3, y: 3}
+  Animator: {fileID: 9100000, guid: baa67eee7fa8b9c4ba2715714aefac30, type: 2}
+  Speed: 4
+  StoppingDistance: 1.5
+  MaxHealth: 125
+  AttackCooldown: 2
+  AttackRadius: 1.5
+  Damage: 10
+  PlayerLayer:
+    serializedVersion: 2
+    m_Bits: 8

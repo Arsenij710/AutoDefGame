@@ -40,15 +40,14 @@ public class PlayerAttack : MonoBehaviour
     {
         Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * _config.attackOffset);
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, _config.attackRadius, _enemyLayer);
-        Debug.Log("Attack");
 
-        //foreach (Collider2D enemyCollider in hitEnemies)
-        //{
-        //    if (enemyCollider.TryGetComponent<Enemy>(out var enemy))
-        //    {
-        //        enemy.TakeDamage(_stats.Damage);
-        //    }
-        //}
+        foreach (Collider2D enemyCollider in hitEnemies)
+        {
+            if (enemyCollider.TryGetComponent<EnemyController>(out var enemy))
+            {
+                enemy.TakeDamage(_stats.Damage);
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()
