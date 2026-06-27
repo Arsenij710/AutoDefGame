@@ -35827,7 +35827,7 @@ EdgeCollider2D:
   - {x: -10.785428, y: 2.494773}
   - {x: 11.80683, y: 2.455799}
   - {x: 11.892713, y: 8.7667465}
-  - {x: 26.17773, y: 8.74044}
+  - {x: 26.19303, y: 8.759775}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
@@ -36036,6 +36036,60 @@ Transform:
   m_LocalPosition: {x: -42.08, y: 3.2, z: 0}
   m_LocalScale: {x: 7.1600003, y: 7.1600003, z: 7.1600003}
   m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1604436908
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1604436910}
+  - component: {fileID: 1604436909}
+  m_Layer: 0
+  m_Name: EnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1604436909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604436908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba71d8d615d7c1948a9e5ee1238e4cea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  _universalPrefab: {fileID: 3156120004639118919, guid: d2b3959efb5f333499c387e4b8f77a70, type: 3}
+  _defaultCapacity: 50
+  _maxPoolSize: 100
+  _allWaves:
+  - {fileID: 11400000, guid: 284902095aaddcd4ab4fee8e4f89aa56, type: 2}
+  - {fileID: 11400000, guid: 127e99b6e28161048adccbd6b35a344a, type: 2}
+  _playerTransform: {fileID: 1292481603}
+  _spawnRadius: 15
+  _mapEdgeCollider: {fileID: 1397882385}
+  _maxSpawnAttempts: 15
+--- !u!4 &1604436910
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604436908}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.67746, y: 6.81689, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -36728,3 +36782,4 @@ SceneRoots:
   - {fileID: 924167696}
   - {fileID: 893587458}
   - {fileID: 1080013812}
+  - {fileID: 1604436910}

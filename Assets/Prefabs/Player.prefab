@@ -221,6 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0726a5394816fe04492f96148d45362e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  _delayBeforeAttack: 0.08
   _config: {fileID: 11400000, guid: 0e862b457515e19428106609827a38c3, type: 2}
   _enemyLayer:
     serializedVersion: 2

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: GolemConfig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   EnemySprite: {fileID: 8837189888415652995, guid: d117b16d50b7bd645ab2f86da4e1f0bd, type: 3}
-  SpriteSize: {x: 3, y: 3}
+  SpriteSize: {x: 4, y: 4}
   Animator: {fileID: 9100000, guid: b6552c3aebf2795439614ec6931df748, type: 2}
   Speed: 3
   StoppingDistance: 1.5
   MaxHealth: 200
-  AttackCooldown: 3
-  AttackRadius: 2.5
+  AttackCooldown: 2
+  AttackRadius: 1.5
   Damage: 20
   PlayerLayer:
     serializedVersion: 2

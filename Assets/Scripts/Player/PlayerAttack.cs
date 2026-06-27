@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
+    [Header("Attack Delay Settings")]
+    [SerializeField] private float _delayBeforeAttack = 0.08f;
+    private float _timeSinceStopped;
+
     [SerializeField] private PlayerData _config;
     [SerializeField] private LayerMask _enemyLayer;
 
@@ -22,18 +26,22 @@ public class PlayerAttack : MonoBehaviour
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
 
-        if (moveX != 0 || moveY != 0)
+        bool isMoving = Mathf.Abs(moveX) > 0.01f || Mathf.Abs(moveY) > 0.01f;
+        if (isMoving)
         {
+            _timeSinceStopped = 0f;
             _lastDirection = new Vector2(moveX, moveY).normalized;
-            return;
+        }
+        else
+        {
+            _timeSinceStopped += Time.deltaTime;
         }
 
-        _cooldownTimer += Time.deltaTime;
-
-        if (_cooldownTimer >= _config.attackCooldown)
+        bool isStoppingCompletely = Mathf.Abs(moveX) < 0.01f && Mathf.Abs(moveY) < 0.01f;
+        if (isStoppingCompletely && _timeSinceStopped >= _delayBeforeAttack && Time.time >= _cooldownTimer)
         {
             _anim.SetTrigger("Attack");
-            _cooldownTimer = 0f;
+            _cooldownTimer = Time.time + _config.attackCooldown;
         }
     }
     public void DealDamageEvent()

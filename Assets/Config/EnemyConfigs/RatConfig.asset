@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: RatConfig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   EnemySprite: {fileID: 6676898260982075175, guid: 7be043c3b72768345bd8bda8237aa21d, type: 3}
-  SpriteSize: {x: 3, y: 3}
+  SpriteSize: {x: 4, y: 4}
   Animator: {fileID: 9100000, guid: b2af98cfbf96ce841963b37ec392cf64, type: 2}
   Speed: 4
   StoppingDistance: 1.2
   MaxHealth: 100
-  AttackCooldown: 3
+  AttackCooldown: 2
   AttackRadius: 1
   Damage: 5
   PlayerLayer:

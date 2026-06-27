@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CrabConfig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   EnemySprite: {fileID: -159299079651030013, guid: 7fa445e39c7ef624587e3b7fb23ff552, type: 3}
-  SpriteSize: {x: 3, y: 3}
+  SpriteSize: {x: 4, y: 4}
   Animator: {fileID: 9100000, guid: baa67eee7fa8b9c4ba2715714aefac30, type: 2}
   Speed: 4
   StoppingDistance: 1.5
   MaxHealth: 125
-  AttackCooldown: 2
-  AttackRadius: 1.5
+  AttackCooldown: 1.5
+  AttackRadius: 1.2
   Damage: 10
   PlayerLayer:
     serializedVersion: 2

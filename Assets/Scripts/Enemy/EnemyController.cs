@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Animator _animator;
 
     private EnemyData _config;
     private EnemyAttack _attackLogic;
-    private SpriteRenderer _spriteRenderer;
     private Transform _playerTransform;
     private Rigidbody2D _rb;
-    private Animator _animator;
 
     private float _currentHealth;
     private float _nextAttackTime;
@@ -18,7 +18,6 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
         _attackLogic = GetComponent<EnemyAttack>();
     }
 
@@ -84,20 +83,30 @@ public class EnemyController : MonoBehaviour
 
         if (direction.x > 0.01f)
         {
-            _spriteRenderer.transform.localScale = new Vector3(1.25f,1.25f, 1.25f);
+            _spriteRenderer.transform.localScale = new Vector3(1f,1f, 1f);
         }
         else if (direction.x < -0.01f)
         {
-            _spriteRenderer.transform.localScale = new Vector3(-1.25f, 1.25f, 1.25f);
+            _spriteRenderer.transform.localScale = new Vector3(-1f, 1f, 1f);
         }
     }
     private void TryAttack()
     {
-        if (Time.time >= _nextAttackTime)
+        _nextAttackTime += Time.deltaTime;
+        if (_nextAttackTime > _config.AttackCooldown)
         {
-            _attackLogic.PerformAoEAttack(_rb.position, _config.AttackRadius, _config.Damage, _config.PlayerLayer);
-            _nextAttackTime = Time.time + _config.AttackCooldown;
+            if (_animator != null)
+            {
+                _animator.SetTrigger("Attack");
+            }
+
+            _nextAttackTime = 0;
         }
+    }
+    public void ExecuteAoEDamage()
+    {
+        if (_isDead || _config == null) return;
+        _attackLogic.PerformAoEAttack(_rb.position, _config.AttackRadius, _config.Damage, _config.PlayerLayer);
     }
 
     public void TakeDamage(float damage)

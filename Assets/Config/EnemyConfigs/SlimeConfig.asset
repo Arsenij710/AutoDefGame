@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: SlimeConfig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   EnemySprite: {fileID: 899315698257640460, guid: ea66931b963ce0c43ac4a901a9bd2e62, type: 3}
-  SpriteSize: {x: 3, y: 3}
+  SpriteSize: {x: 4, y: 4}
   Animator: {fileID: 9100000, guid: 31193055c1a5c4d46acf0cf8d3686ea8, type: 2}
   Speed: 3
-  StoppingDistance: 1.2
+  StoppingDistance: 1.5
   MaxHealth: 150
-  AttackCooldown: 4
-  AttackRadius: 2
+  AttackCooldown: 3
+  AttackRadius: 1.25
   Damage: 15
   PlayerLayer:
     serializedVersion: 2
