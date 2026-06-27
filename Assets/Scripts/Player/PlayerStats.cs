@@ -1,26 +1,33 @@
-using System;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+
     [SerializeField] private PlayerData _config; 
 
+    private UIHPBar _hpBar;
     private int _currentHealth;
 
     private int _healthUpgradesCount = 0;
     private int _damageUpgradesCount = 0;
 
-    public static event Action<int, int> OnHealthChanged;
     
     public int MaxHealth => _config.baseMaxHealth + (_healthUpgradesCount * PlayerData.HealthBonusPerLevel);
     public int Damage => _config.baseDamage + (_damageUpgradesCount * PlayerData.DamageBonusPerLevel);
     public int CurrentHealth => _currentHealth;
 
+    private void Awake()
+    {
+        _hpBar = FindAnyObjectByType<UIHPBar>();
+    }
     private void Start()
     {
         _currentHealth = MaxHealth;
 
-        OnHealthChanged?.Invoke(_currentHealth, MaxHealth);
+        if (_hpBar != null)
+        {
+            _hpBar.SetupMaxHealth(MaxHealth);
+        }
     }
 
     public void UpgradeMaxHealth()
@@ -28,7 +35,11 @@ public class PlayerStats : MonoBehaviour
         _healthUpgradesCount++;
         _currentHealth += PlayerData.HealthBonusPerLevel;
 
-        OnHealthChanged?.Invoke(_currentHealth, MaxHealth);
+        if (_hpBar != null)
+        {
+            _hpBar.SetupMaxHealth(MaxHealth);
+            _hpBar.UpdateHealthBar(_currentHealth);
+        }
     }
 
     public void UpgradeDamage()
@@ -39,9 +50,12 @@ public class PlayerStats : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         _currentHealth -= damageAmount;
-        _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth); 
+        _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
 
-        OnHealthChanged?.Invoke(_currentHealth, MaxHealth);
+        if (_hpBar != null)
+        {
+            _hpBar.UpdateHealthBar(_currentHealth);
+        }
 
         if (_currentHealth <= 0)
         {
@@ -53,11 +67,21 @@ public class PlayerStats : MonoBehaviour
         _currentHealth += healAmount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
 
-        OnHealthChanged?.Invoke(_currentHealth, MaxHealth);
+        if (_hpBar != null)
+        {
+            _hpBar.UpdateHealthBar(_currentHealth);
+        }
     }
 
     private void Die()
     {
-        Debug.Log("Игрок погиб! Экран Game Over.");
+        UIManager uiManager = FindFirstObjectByType<UIManager>();
+
+        if (uiManager != null)
+        {
+            uiManager.TriggerGameOver();
+        }
+
+        //gameObject.SetActive(false);
     }
 }

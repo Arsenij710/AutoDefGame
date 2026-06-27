@@ -14,6 +14,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<WaveData> _allWaves; 
     [SerializeField] private Transform _playerTransform; 
     [SerializeField] private float _spawnRadius = 15f;
+    [SerializeField] private float _timeBetweenWaves = 5f;
 
     [Header("Map Bounds")]
     [SerializeField] private EdgeCollider2D _mapEdgeCollider; 
@@ -25,6 +26,8 @@ public class EnemySpawner : MonoBehaviour
     private IObjectPool<EnemyController> _enemyPool;
     private int _currentWaveIndex = 0;
     private bool _isSpawning = false;
+    private int _activeEnemiesCount = 0;
+    private float _waveTimer = 0f;
 
     private void Awake()
     {
@@ -37,6 +40,7 @@ public class EnemySpawner : MonoBehaviour
             defaultCapacity: _defaultCapacity,
             maxSize: _maxPoolSize
         );
+
         if (_mapEdgeCollider != null)
         {
             _polygonPoints = _mapEdgeCollider.points;
@@ -51,7 +55,7 @@ public class EnemySpawner : MonoBehaviour
     }
     private IEnumerator StartNextWave()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(_timeBetweenWaves);
         while (_currentWaveIndex < _allWaves.Count)
         {
             WaveData currentWave = _allWaves[_currentWaveIndex];
@@ -59,12 +63,17 @@ public class EnemySpawner : MonoBehaviour
             _isSpawning = true;
             StartCoroutine(SpawnWaveEnemies(currentWave));
 
-            yield return new WaitForSeconds(currentWave.Duration);
+            while (_activeEnemiesCount > 0 && _waveTimer < currentWave.Duration)
+            {
+                _waveTimer += Time.deltaTime;
+                yield return null; 
+            }
+            
 
             _isSpawning = false;
             _currentWaveIndex++;
 
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(_timeBetweenWaves);
         }
     }
     private IEnumerator SpawnWaveEnemies(WaveData wave)
@@ -93,6 +102,7 @@ public class EnemySpawner : MonoBehaviour
             enemy.Initialize(currentEnemyData);
 
             spawnedCount++;
+            _activeEnemiesCount++;
 
             yield return new WaitForSeconds(wave.SpawnInterval);
         }
@@ -154,5 +164,9 @@ public class EnemySpawner : MonoBehaviour
             list[rnd] = list[i];
             list[i] = value;
         }
+    }
+    public void OnEnemyKilled()
+    {
+        _activeEnemiesCount--;
     }
 }

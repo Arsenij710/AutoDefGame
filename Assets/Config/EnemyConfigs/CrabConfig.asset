@@ -16,10 +16,10 @@ MonoBehaviour:
   SpriteSize: {x: 4, y: 4}
   Animator: {fileID: 9100000, guid: baa67eee7fa8b9c4ba2715714aefac30, type: 2}
   Speed: 4
-  StoppingDistance: 1.5
+  StoppingDistance: 1.2
   MaxHealth: 125
   AttackCooldown: 1.5
-  AttackRadius: 1.2
+  AttackRadius: 2
   Damage: 10
   PlayerLayer:
     serializedVersion: 2

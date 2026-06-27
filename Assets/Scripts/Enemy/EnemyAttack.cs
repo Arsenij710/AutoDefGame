@@ -11,7 +11,6 @@ public class EnemyAttack : MonoBehaviour
             if (player.TryGetComponent<PlayerStats>(out var health))
             {
                 health.TakeDamage(damage);
-                Debug.Log(health.CurrentHealth);
             }
         }
     }

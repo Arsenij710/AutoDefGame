@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -13,6 +12,7 @@ public class EnemyController : MonoBehaviour
 
     private float _currentHealth;
     private float _nextAttackTime;
+    private float _distanceToPlayer;
     private bool _isDead;
 
     private void Awake()
@@ -58,22 +58,39 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (_isDead || _playerTransform == null) return;
+
+        _distanceToPlayer = Vector2.Distance(transform.position, _playerTransform.position);
+
+        _nextAttackTime += Time.deltaTime;
+        if (_nextAttackTime > _config.AttackCooldown)
+        {
+            if (_animator != null && _distanceToPlayer <= _config.AttackRadius)
+            {
+                TryAttack();
+                _animator.SetTrigger("Attack");
+            }
+
+            _nextAttackTime = 0;
+        }
+    }
     private void FixedUpdate()
     {
         if (_isDead || _playerTransform == null) return;
 
-        float distanceToPlayer = Vector2.Distance(_rb.position, _playerTransform.position);
 
-        if (distanceToPlayer > _config.StoppingDistance)
+        if (_distanceToPlayer > _config.StoppingDistance)
         {
             MoveTowardsPlayer();
         }
         else
         {
-            _rb.linearVelocity = Vector2.zero; 
-            TryAttack();
+            _rb.linearVelocity = Vector2.zero;
         }
     }
+
     private void MoveTowardsPlayer()
     {
         Vector2 direction = ((Vector2)_playerTransform.position - _rb.position).normalized;
@@ -121,10 +138,15 @@ public class EnemyController : MonoBehaviour
 
     private void Die()
     {
+        EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();
+        if (spawner != null)
+        {
+            spawner.OnEnemyKilled();
+        }
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
-
         gameObject.SetActive(false);
+        
     }
 
     private void OnDrawGizmosSelected()

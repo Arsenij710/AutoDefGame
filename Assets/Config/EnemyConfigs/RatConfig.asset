@@ -19,7 +19,7 @@ MonoBehaviour:
   StoppingDistance: 1.2
   MaxHealth: 100
   AttackCooldown: 2
-  AttackRadius: 1
+  AttackRadius: 1.8
   Damage: 5
   PlayerLayer:
     serializedVersion: 2
