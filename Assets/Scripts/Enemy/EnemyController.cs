@@ -1,14 +1,22 @@
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class EnemyController : MonoBehaviour
 {
+    [Header("Damage Numbers UI")]
+    [SerializeField] private DamageDisappear _damagePrefab;
+
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Animator _animator;
+
+    private IObjectPool<DamageDisappear> _damagePool;
 
     private EnemyData _config;
     private EnemyAttack _attackLogic;
     private Transform _playerTransform;
     private Rigidbody2D _rb;
+    private Canvas _canvas;
+    private CapsuleCollider2D _capsuleCollider;
 
     private float _currentHealth;
     private float _nextAttackTime;
@@ -18,7 +26,18 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _attackLogic = GetComponent<EnemyAttack>();
+        _canvas = GameObject.FindWithTag("EffectsCanvas").GetComponent<Canvas>();
+        _damagePool = new ObjectPool<DamageDisappear>(
+            createFunc: () => Instantiate(_damagePrefab, _canvas.transform),            
+            actionOnGet: (dmg) => dmg.gameObject.SetActive(true),            
+            actionOnRelease: (dmg) => dmg.gameObject.SetActive(false),    
+            actionOnDestroy: (dmg) => Destroy(dmg.gameObject),    
+            collectionCheck: true,
+            defaultCapacity: 20,               
+            maxSize: 50                        
+        );
     }
 
     public void Initialize(EnemyData newData)
@@ -37,6 +56,11 @@ public class EnemyController : MonoBehaviour
 
             _animator.Rebind();
             _animator.Update(0f);
+        }
+
+        if (_capsuleCollider != null && _config != null)
+        {
+            _capsuleCollider.size = _config.colliderSize;
         }
 
         _currentHealth = _config.MaxHealth;
@@ -130,6 +154,17 @@ public class EnemyController : MonoBehaviour
     {
         if (_isDead) return;
         _currentHealth -= damage;
+        int isDamageVisible = PlayerPrefs.GetInt("ShowDamageNumbers", 1);
+        if (_damagePrefab != null && isDamageVisible == 1)
+        {
+            Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
+
+            DamageDisappear damagePopup = _damagePool.Get();
+
+            damagePopup.transform.position = spawnPos;
+
+            damagePopup.Setup(damage, _damagePool);
+        }
         if (_currentHealth <= 0)
         {
             Die();

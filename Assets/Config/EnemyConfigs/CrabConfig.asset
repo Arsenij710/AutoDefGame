@@ -18,9 +18,10 @@ MonoBehaviour:
   Speed: 4
   StoppingDistance: 1.2
   MaxHealth: 125
-  AttackCooldown: 1.5
-  AttackRadius: 2
+  AttackCooldown: 2
+  AttackRadius: 1.8
   Damage: 10
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 8
+  colliderSize: {x: 1.4, y: 0.8}

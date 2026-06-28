@@ -21,4 +21,7 @@ public class EnemyData : ScriptableObject
     public float AttackRadius = 1.5f;
     public int Damage = 10;
     public LayerMask PlayerLayer;
+
+    [Header("Collider Settings")]
+    public Vector2 colliderSize = new Vector2(1f, 0.7f);     
 }

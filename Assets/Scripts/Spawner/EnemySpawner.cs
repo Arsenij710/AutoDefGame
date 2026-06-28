@@ -14,7 +14,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<WaveData> _allWaves; 
     [SerializeField] private Transform _playerTransform; 
     [SerializeField] private float _spawnRadius = 15f;
-    [SerializeField] private float _timeBetweenWaves = 5f;
+    [SerializeField] private float _timeBetweenWaves = 3f;
 
     [Header("Map Bounds")]
     [SerializeField] private EdgeCollider2D _mapEdgeCollider; 
@@ -132,7 +132,7 @@ public class EnemySpawner : MonoBehaviour
 
         if (!validPositionFound)
         {
-            finalPosition = _playerTransform.position + new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), 0f);
+            finalPosition = _playerTransform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f);
         }
 
         return finalPosition;

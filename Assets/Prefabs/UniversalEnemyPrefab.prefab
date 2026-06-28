@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1636336704056210725}
   - component: {fileID: 8529113916023501081}
-  - component: {fileID: 5740485066019384197}
   - component: {fileID: 3156120004639118919}
   - component: {fileID: 3152368016212405498}
+  - component: {fileID: 6664427161440414870}
   m_Layer: 6
   m_Name: UniversalEnemyPrefab
   m_TagString: Enemy
@@ -63,8 +63,35 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &5740485066019384197
-CircleCollider2D:
+--- !u!114 &3156120004639118919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6783474264587056354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b93fdd12e30fe0c4bb36a6302d4bd7bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  _damagePrefab: {fileID: 1189691265077352476, guid: 8ac804e88cbb980449476452daa3ceab, type: 3}
+  _spriteRenderer: {fileID: 2454490113754401885}
+  _animator: {fileID: 4091247326776233300}
+--- !u!114 &3152368016212405498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6783474264587056354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876f1ed11888e8c408a8068e84afe9ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
+--- !u!70 &6664427161440414870
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -98,33 +125,8 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.7
---- !u!114 &3156120004639118919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6783474264587056354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b93fdd12e30fe0c4bb36a6302d4bd7bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  _spriteRenderer: {fileID: 2454490113754401885}
-  _animator: {fileID: 4091247326776233300}
---- !u!114 &3152368016212405498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6783474264587056354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 876f1ed11888e8c408a8068e84afe9ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
+  m_Size: {x: 1, y: 0.7}
+  m_Direction: 1
 --- !u!1 &8013645223391964912
 GameObject:
   m_ObjectHideFlags: 0
