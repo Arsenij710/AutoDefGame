@@ -34,7 +34,7 @@ public class SettingManager : MonoBehaviour
         _windowedToggle.isOn = !Screen.fullScreen;
         _vsyncToggle.isOn = (QualitySettings.vSyncCount != 0);
         _fpsToggle.isOn = (PlayerPrefs.GetInt("ShowFps", 0) == 1);
-        _damageToggle.isOn = (PlayerPrefs.GetInt("ShowDamageNumbers", 0) == 1);
+        _damageToggle.isOn = (PlayerPrefs.GetInt("ShowDamageNumbers", 1) == 1);
     }
     public void ShowVideoTab()
     {

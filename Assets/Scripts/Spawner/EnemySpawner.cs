@@ -20,6 +20,9 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private EdgeCollider2D _mapEdgeCollider; 
     [SerializeField] private int _maxSpawnAttempts = 15;
 
+    [Header("Update Panel")]
+    [SerializeField] private UpgradeManager _upgrade;
+
 
     private Vector2[] _polygonPoints;
 
@@ -59,7 +62,6 @@ public class EnemySpawner : MonoBehaviour
         while (_currentWaveIndex < _allWaves.Count)
         {
             WaveData currentWave = _allWaves[_currentWaveIndex];
-
             _isSpawning = true;
             StartCoroutine(SpawnWaveEnemies(currentWave));
 
@@ -68,10 +70,18 @@ public class EnemySpawner : MonoBehaviour
                 _waveTimer += Time.deltaTime;
                 yield return null; 
             }
-            
-
             _isSpawning = false;
+
+            float targetTime = currentWave.Duration * 0.8f;
+
+            if (_activeEnemiesCount == 0 && _waveTimer <= targetTime)
+            {
+                _upgrade.OpenUpgradePanel();
+            }
+
             _currentWaveIndex++;
+            _waveTimer = 0;
+            
 
             yield return new WaitForSeconds(_timeBetweenWaves);
         }
@@ -99,7 +109,7 @@ public class EnemySpawner : MonoBehaviour
             EnemyController enemy = _enemyPool.Get();
             enemy.transform.position = spawnPosition;
 
-            enemy.Initialize(currentEnemyData);
+            enemy.Initialize(currentEnemyData, (e) => _enemyPool.Release(e));
 
             spawnedCount++;
             _activeEnemiesCount++;

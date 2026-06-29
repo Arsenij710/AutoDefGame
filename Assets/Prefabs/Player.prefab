@@ -208,7 +208,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71ba599542a5aaa4eabdecbf42520eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  invincibilityDuration: 1
+  delayBeforeUI: 1
   _config: {fileID: 11400000, guid: 0e862b457515e19428106609827a38c3, type: 2}
+  flashInterval: 0.1
 --- !u!114 &1234987730670060194
 MonoBehaviour:
   m_ObjectHideFlags: 0

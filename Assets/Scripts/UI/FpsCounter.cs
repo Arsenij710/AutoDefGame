@@ -13,7 +13,6 @@ public class FpsCounter : MonoBehaviour
     private void Start()
     {
         int showFps = PlayerPrefs.GetInt("ShowFps", 0);
-        Debug.Log(showFps);
         FpsOnOff(showFps);
     }
     private void Update()

@@ -16,5 +16,5 @@ MonoBehaviour:
   baseDamage: 30
   baseMoveSpeed: 8
   attackCooldown: 1.5
-  attackRadius: 1.3
+  attackRadius: 1.2
   attackOffset: 0.5

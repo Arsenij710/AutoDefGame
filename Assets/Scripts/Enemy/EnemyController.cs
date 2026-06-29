@@ -1,16 +1,16 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
 public class EnemyController : MonoBehaviour
 {
-    [Header("Damage Numbers UI")]
-    [SerializeField] private DamageDisappear _damagePrefab;
-
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Animator _animator;
 
-    private IObjectPool<DamageDisappear> _damagePool;
+    private Action<EnemyController> _onDeathCallback;
 
+    private DamageTextManager _damageText;
     private EnemyData _config;
     private EnemyAttack _attackLogic;
     private Transform _playerTransform;
@@ -29,20 +29,14 @@ public class EnemyController : MonoBehaviour
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _attackLogic = GetComponent<EnemyAttack>();
         _canvas = GameObject.FindWithTag("EffectsCanvas").GetComponent<Canvas>();
-        _damagePool = new ObjectPool<DamageDisappear>(
-            createFunc: () => Instantiate(_damagePrefab, _canvas.transform),            
-            actionOnGet: (dmg) => dmg.gameObject.SetActive(true),            
-            actionOnRelease: (dmg) => dmg.gameObject.SetActive(false),    
-            actionOnDestroy: (dmg) => Destroy(dmg.gameObject),    
-            collectionCheck: true,
-            defaultCapacity: 20,               
-            maxSize: 50                        
-        );
+        _damageText = FindFirstObjectByType<DamageTextManager>();
     }
 
-    public void Initialize(EnemyData newData)
+    public void Initialize(EnemyData newData, Action<EnemyController> release)
     {
         _config = newData;
+        _onDeathCallback = release;
+        gameObject.SetActive(true);
 
         if (_spriteRenderer != null && _config.EnemySprite != null)
         {
@@ -60,6 +54,7 @@ public class EnemyController : MonoBehaviour
 
         if (_capsuleCollider != null && _config != null)
         {
+            _capsuleCollider.enabled = true;
             _capsuleCollider.size = _config.colliderSize;
         }
 
@@ -70,7 +65,6 @@ public class EnemyController : MonoBehaviour
 
         FindPlayer();
 
-        gameObject.SetActive(true);
     }
 
     private void FindPlayer()
@@ -108,10 +102,12 @@ public class EnemyController : MonoBehaviour
         if (_distanceToPlayer > _config.StoppingDistance)
         {
             MoveTowardsPlayer();
+            _animator.SetBool("Run", true);
         }
         else
         {
             _rb.linearVelocity = Vector2.zero;
+            _animator.SetBool("Run", false);
         }
     }
 
@@ -150,24 +146,18 @@ public class EnemyController : MonoBehaviour
         _attackLogic.PerformAoEAttack(_rb.position, _config.AttackRadius, _config.Damage, _config.PlayerLayer);
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(int damage)
     {
         if (_isDead) return;
         _currentHealth -= damage;
-        int isDamageVisible = PlayerPrefs.GetInt("ShowDamageNumbers", 1);
-        if (_damagePrefab != null && isDamageVisible == 1)
-        {
-            Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
-
-            DamageDisappear damagePopup = _damagePool.Get();
-
-            damagePopup.transform.position = spawnPos;
-
-            damagePopup.Setup(damage, _damagePool);
-        }
+        _damageText.ShowDamage(transform.position, damage);
         if (_currentHealth <= 0)
         {
             Die();
+        }
+        else
+        {
+            _animator.SetTrigger("Hit");
         }
     }
 
@@ -180,8 +170,20 @@ public class EnemyController : MonoBehaviour
         }
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
-        gameObject.SetActive(false);
-        
+        _animator.SetTrigger("Death");
+        _capsuleCollider.enabled = false;
+
+        StartCoroutine(WaitForDeathAnimationCoroutine());
+    }
+    private IEnumerator WaitForDeathAnimationCoroutine()
+    {
+        yield return new WaitForEndOfFrame();
+
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        float animationLength = stateInfo.length;
+        yield return new WaitForSeconds(animationLength);
+
+        _onDeathCallback?.Invoke(this);
     }
 
     private void OnDrawGizmosSelected()

@@ -14,6 +14,13 @@ public class PlayerAttack : MonoBehaviour
     private float _cooldownTimer = 0f;
     private Vector2 _lastDirection = Vector2.right;
 
+    private int _attackSpeedUpgradesCount = 0;
+    private int _radiusUpgradesCount = 0;
+    public float AttackSpeed => _config.attackCooldown - (_attackSpeedUpgradesCount * PlayerData.AttackSpeedBonusPerLevel);
+    public float Radius => _config.attackRadius + (_radiusUpgradesCount * PlayerData.RadiusBonusPerLevel);
+    public float Offset => _config.attackOffset + (_radiusUpgradesCount * PlayerData.OffsetBonusPerLevel);
+
+
     private void Awake()
     {
         _stats = GetComponent<PlayerStats>();
@@ -40,13 +47,21 @@ public class PlayerAttack : MonoBehaviour
         if (isStoppingCompletely && _timeSinceStopped >= _delayBeforeAttack && Time.time >= _cooldownTimer)
         {
             _anim.SetTrigger("Attack");
-            _cooldownTimer = Time.time + _config.attackCooldown;
+            _cooldownTimer = Time.time + AttackSpeed;
         }
+    }
+    public void UpgradeAttackSpeed()
+    {
+        _attackSpeedUpgradesCount++;
+    }
+    public void UpgradeRadius()
+    {
+        _radiusUpgradesCount++;
     }
     public void DealDamageEvent()
     {
-        Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * _config.attackOffset);
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, _config.attackRadius, _enemyLayer);
+        Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * Offset);
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, Radius, _enemyLayer);
 
         foreach (Collider2D enemyCollider in hitEnemies)
         {
@@ -66,7 +81,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (!Application.isPlaying) direction = Vector2.right;
 
-        Vector2 attackPoint = (Vector2)transform.position + (direction * _config.attackOffset);
-        Gizmos.DrawWireSphere(attackPoint, _config.attackRadius);
+        Vector2 attackPoint = (Vector2)transform.position + (direction * Offset);
+        Gizmos.DrawWireSphere(attackPoint, Radius);
     }
 }
