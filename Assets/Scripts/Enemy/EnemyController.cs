@@ -164,6 +164,7 @@ public class EnemyController : MonoBehaviour
     private void Die()
     {
         EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();
+        
         if (spawner != null)
         {
             spawner.OnEnemyKilled();
@@ -183,6 +184,8 @@ public class EnemyController : MonoBehaviour
         float animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
 
+        ParticleManager particle = FindFirstObjectByType<ParticleManager>();
+        particle.SpawnExperience(transform.position, 1);
         _onDeathCallback?.Invoke(this);
     }
 

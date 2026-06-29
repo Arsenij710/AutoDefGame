@@ -1,7 +1,9 @@
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines.Interpolators;
+using UnityEngine.UI;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -11,6 +13,17 @@ public class PlayerStats : MonoBehaviour
 
     [Header("DeathSettings")]
     public float delayBeforeUI = 1.2f;
+
+    [Header("Level System")]
+    public int currentLevel = 1;
+    public int currentExp = 0;
+    public int expToNextLevel = 100;
+    [SerializeField] private Slider _expSlider;
+    [SerializeField] private TMP_Text _levelText;
+
+
+    [Header("Update Panel")]
+    [SerializeField] private UpgradeManager _upgrade;
 
     [SerializeField] private PlayerData _config; 
 
@@ -37,6 +50,7 @@ public class PlayerStats : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _rb = GetComponent<Rigidbody2D>();
+        _levelText.text = currentLevel.ToString();
         originalColor = _spriteRenderer.color;
     }
     private void Start()
@@ -46,6 +60,38 @@ public class PlayerStats : MonoBehaviour
         if (_hpBar != null)
         {
             _hpBar.SetupMaxHealth(MaxHealth);
+        }
+    }
+    public void AddExperience(int amount)
+    {
+        currentExp += amount;
+
+        while (currentExp >= expToNextLevel)
+        {
+            LevelUp();
+        }
+
+        UpdateExpUI();
+    }
+    private void LevelUp()
+    {
+        currentExp -= expToNextLevel;
+        currentLevel++;
+        _levelText.text = currentLevel.ToString();
+        expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.2f) + 50;
+
+
+        if (_upgrade != null)
+        {
+            _upgrade.OpenUpgradePanel();
+        }
+    }
+    private void UpdateExpUI()
+    {
+        if (_expSlider != null)
+        {
+            _expSlider.maxValue = expToNextLevel;
+            _expSlider.value = currentExp;
         }
     }
 
