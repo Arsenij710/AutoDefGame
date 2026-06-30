@@ -6,6 +6,7 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float _delayBeforeAttack = 0.08f;
     private float _timeSinceStopped;
 
+    [SerializeField] private float _damageSpreadPercent = 0.1f;
     [SerializeField] private PlayerData _config;
     [SerializeField] private LayerMask _enemyLayer;
 
@@ -50,7 +51,6 @@ public class PlayerAttack : MonoBehaviour
         {
             _anim.SetTrigger("Attack");
             _cooldownTimer = Time.time + AttackSpeed;
-            _audio.PlayPlayerHit();
         }
     }
     public void UpgradeAttackSpeed()
@@ -65,14 +65,26 @@ public class PlayerAttack : MonoBehaviour
     {
         Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * Offset);
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, Radius, _enemyLayer);
+        _audio.PlayPlayerHit();
 
         foreach (Collider2D enemyCollider in hitEnemies)
         {
             if (enemyCollider.TryGetComponent<EnemyController>(out var enemy))
             {
-                enemy.TakeDamage(_stats.Damage);
+                enemy.TakeDamage(GetRandomDamage());
             }
         }
+    }
+    public int GetRandomDamage()
+    {
+        int baseDamage = _stats.Damage;
+
+        float spread = baseDamage * _damageSpreadPercent;
+
+        float minDamage = baseDamage - spread;
+        float maxDamage = baseDamage + spread;
+
+        return Mathf.RoundToInt(Random.Range(minDamage, maxDamage));
     }
 
     private void OnDrawGizmosSelected()

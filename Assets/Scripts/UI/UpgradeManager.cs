@@ -28,6 +28,7 @@ public class UpgradeManager : MonoBehaviour
     }
     public void OpenUpgradePanel()
     {
+        ShowCursor();
         Time.timeScale = 0f;
         gameObject.SetActive(true);
         rerollsAvailable = 1;
@@ -69,5 +70,17 @@ public class UpgradeManager : MonoBehaviour
         gameObject.SetActive(false);
         IsUpgradeOpen = false;
         Time.timeScale = 1f;
+        HideCursor();
+    }
+    private void ShowCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    private void HideCursor()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }

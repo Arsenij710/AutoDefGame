@@ -8,7 +8,8 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject _optionsPanel;
     public void PlayGame()
     {
-
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         SceneManager.LoadScene("Game");
     }
 

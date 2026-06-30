@@ -52,6 +52,7 @@ public class UIManager : MonoBehaviour
     }
     public void PauseGame()
     {
+        ShowCursor();
         _isPaused = true;
         _pauseMenuPanel.SetActive(true);
         UpdatePlayerStatsUI();
@@ -60,6 +61,7 @@ public class UIManager : MonoBehaviour
 
     public void ResumeGame()
     {
+        HideCursor();
         _isPaused = false;
         _pauseMenuPanel.SetActive(false); 
 
@@ -67,6 +69,7 @@ public class UIManager : MonoBehaviour
     }
     public IEnumerator TriggerGameOver()
     {
+        ShowCursor();
         _isGameOver = true;
         float currentTime = 0f;
         _gameOverPanel.SetActive(true);
@@ -87,16 +90,18 @@ public class UIManager : MonoBehaviour
     {
         ScoreManager score = FindFirstObjectByType<ScoreManager>(); 
         int highScore = PlayerPrefs.GetInt("Record", 0);
+        string highScoreaName = PlayerPrefs.GetString("RecordName", "Игрок");
         int _currentScore = score.GetCurrentScore();
         if (_currentScore > highScore)
         {
             PlayerPrefs.SetInt("Record", _currentScore);
+            PlayerPrefs.SetString("RecordName", _name);
             PlayerPrefs.Save();
             _finalScoreText.text = $"Новый рекорд!\n{_name} - {_currentScore}";
         }
         else
         {
-            _finalScoreText.text = $"Рекорд не побит!\n{_name} - {highScore}\nВаш текущий счёт: \n{_currentScore}";
+            _finalScoreText.text = $"Рекорд не побит!\n{highScoreaName} - {highScore}\nВаш текущий счёт: \n{_currentScore}";
 
         }
 
@@ -111,6 +116,7 @@ public class UIManager : MonoBehaviour
     }
     public void Resatrt()
     {
+        HideCursor();
         Time.timeScale = 1f;
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); 
@@ -126,6 +132,17 @@ public class UIManager : MonoBehaviour
             leftText.text = $"Атака - {stats.Damage}\nХп - {stats.MaxHealth}\nРегенерация Хп - 2\nСкорость атаки - {attack.AttackSpeed}с\nРадиус атаки - {attack.Radius}м";
             rightText.text = $"Шанс крита - 56%\nКрит урон - 120%\nШанс уворота - 15%\nШанс повторной атаки - 3%";
         }
-        
+    }
+
+    private void ShowCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    private void HideCursor()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }

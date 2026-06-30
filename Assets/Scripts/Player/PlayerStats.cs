@@ -41,8 +41,33 @@ public class PlayerStats : MonoBehaviour
     private int _damageUpgradesCount = 0;
 
     
-    public int MaxHealth => _config.baseMaxHealth + (_healthUpgradesCount * PlayerData.HealthBonusPerLevel);
-    public int Damage => _config.baseDamage + (_damageUpgradesCount * PlayerData.DamageBonusPerLevel);
+    public int MaxHealth
+    {
+        get
+        {
+            float percentageBonus = PlayerData.HealthBonusPerLevel;
+
+            float multiplier = Mathf.Pow(1f + percentageBonus, _healthUpgradesCount);
+
+            return Mathf.RoundToInt(_config.baseMaxHealth * multiplier);
+        }
+    }
+    public int Damage
+    {
+        get
+        {
+            float currentDamage = _config.baseDamage;
+            float percent = PlayerData.DamageBonusPerLevel;
+            int flatBonus = 5; 
+
+            for (int i = 0; i < _damageUpgradesCount; i++)
+            {
+                currentDamage = (currentDamage + flatBonus) * (1f + percent);
+            }
+
+            return Mathf.RoundToInt(currentDamage);
+        }
+    } 
     public int CurrentHealth => _currentHealth;
 
     private void Awake()
@@ -100,9 +125,14 @@ public class PlayerStats : MonoBehaviour
 
     public void UpgradeMaxHealth()
     {
+        Debug.Log(_currentHealth);
+        Debug.Log(MaxHealth);
+        int oldMaxHealth = MaxHealth;
         _healthUpgradesCount++;
-        _currentHealth += PlayerData.HealthBonusPerLevel;
-
+        float healthMultiplier = (float)MaxHealth / oldMaxHealth;
+        _currentHealth = Mathf.RoundToInt(_currentHealth * healthMultiplier);
+        Debug.Log(_currentHealth);
+        Debug.Log(MaxHealth);
         if (_hpBar != null)
         {
             _hpBar.SetupMaxHealth(MaxHealth);
