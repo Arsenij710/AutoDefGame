@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Pool;
 
 public class EnemyController : MonoBehaviour
 {
@@ -16,6 +15,7 @@ public class EnemyController : MonoBehaviour
     private Transform _playerTransform;
     private Rigidbody2D _rb;
     private CapsuleCollider2D _capsuleCollider;
+    private AudioManager _audio;
     private int _scoreReward;
 
     private float _currentHealth;
@@ -30,6 +30,7 @@ public class EnemyController : MonoBehaviour
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _attackLogic = GetComponent<EnemyAttack>();
         _damageText = FindFirstObjectByType<DamageTextManager>();
+        _audio = FindFirstObjectByType<AudioManager>();
     }
 
     public void Initialize(EnemyData newData, Action<EnemyController> release, int waveNumber)
@@ -154,7 +155,9 @@ public class EnemyController : MonoBehaviour
     {
         if (_isDead) return;
         _currentHealth -= damage;
-        _damageText.ShowDamage(transform.position, damage);
+        Color color;
+        ColorUtility.TryParseHtmlString("#FD918C", out color);
+        _damageText.ShowDamage(transform.position, damage, color);
         if (_currentHealth <= 0)
         {
             Die();
@@ -178,6 +181,7 @@ public class EnemyController : MonoBehaviour
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
         _animator.SetTrigger("Death");
+        _audio.PlayEnemyDeath();
         _capsuleCollider.enabled = false;
 
         StartCoroutine(WaitForDeathAnimationCoroutine());

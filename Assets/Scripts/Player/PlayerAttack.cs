@@ -11,6 +11,7 @@ public class PlayerAttack : MonoBehaviour
 
     private Animator _anim;
     private PlayerStats _stats;
+    private AudioManager _audio;
     private float _cooldownTimer = 0f;
     private Vector2 _lastDirection = Vector2.right;
 
@@ -25,6 +26,7 @@ public class PlayerAttack : MonoBehaviour
     {
         _stats = GetComponent<PlayerStats>();
         _anim = GetComponent<Animator>();
+        _audio = FindFirstObjectByType<AudioManager>();
     }
 
     private void Update()
@@ -48,6 +50,7 @@ public class PlayerAttack : MonoBehaviour
         {
             _anim.SetTrigger("Attack");
             _cooldownTimer = Time.time + AttackSpeed;
+            _audio.PlayPlayerHit();
         }
     }
     public void UpgradeAttackSpeed()

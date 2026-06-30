@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.UI;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -17,9 +19,13 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<WaveData> _midWaves; 
     [SerializeField] private List<WaveData> _hugeWaves; 
     [SerializeField] private Transform _playerTransform; 
+    [SerializeField] private Slider _timerSlider;
+    [SerializeField] private TMP_Text _waveText;
+    [SerializeField] private TMP_Text _waveDiffText;
+    [SerializeField] private Image _sliderFillImage;
     [SerializeField] private float _spawnRadius = 15f;
     [SerializeField] private float _timeBetweenWaves = 3f;
-    
+
     [Header("Levels Sequence")]
     [SerializeField] private List<WaveDifficulty> waveStructure = new List<WaveDifficulty>()
     {
@@ -76,23 +82,42 @@ public class EnemySpawner : MonoBehaviour
     }
     private IEnumerator StartNextWave()
     {
+        Color colorRew;
+        Color colorNoRew;
+        ColorUtility.TryParseHtmlString("#D48C29", out colorRew);
+        ColorUtility.TryParseHtmlString("#DBC6A9", out colorNoRew);
+
         yield return new WaitForSeconds(_timeBetweenWaves);
         while (_currentWaveIndex < waveStructure.Count)
         {
             WaveDifficulty requiredDifficulty = waveStructure[_currentWaveIndex];
             WaveData currentWave = GetRandomWaveFromPool(requiredDifficulty);
-
+            _waveText.text = $"Текущая волна: {_currentWaveIndex + 1}";
+            _waveDiffText.text = $"{GetDifficultyName(requiredDifficulty)}";
+            _sliderFillImage.color = colorRew;
             _isSpawning = true;
             StartCoroutine(SpawnWaveEnemies(currentWave));
+            yield return null;
+
+            float targetTime = currentWave.Duration * 0.8f;
+            bool colorChanged = false;
 
             while (_activeEnemiesCount > 0 && _waveTimer < currentWave.Duration)
             {
                 _waveTimer += Time.deltaTime;
+                if (_timerSlider != null)
+                {
+                    _timerSlider.value = _waveTimer / currentWave.Duration;
+                }
+                if (_waveTimer > targetTime && !colorChanged)
+                {
+                    colorChanged = true;
+                    _sliderFillImage.color = colorNoRew;
+                }
                 yield return null; 
             }
             _isSpawning = false;
 
-            float targetTime = currentWave.Duration * 0.8f;
 
             if (_activeEnemiesCount == 0 && _waveTimer <= targetTime)
             {
@@ -101,7 +126,7 @@ public class EnemySpawner : MonoBehaviour
 
             _currentWaveIndex++;
             _waveTimer = 0;
-            
+            _timerSlider.value = 0f;
 
             yield return new WaitForSeconds(_timeBetweenWaves);
         }
@@ -199,6 +224,16 @@ public class EnemySpawner : MonoBehaviour
 
         return isInside;
     }
+    private string GetDifficultyName(WaveDifficulty difficulty)
+    {
+        switch (difficulty)
+        {
+            case WaveDifficulty.Easy: return "Легкая";
+            case WaveDifficulty.Medium: return "Средняя";
+            case WaveDifficulty.Huge: return "Большая";
+            default: return "";
+        }
+    }
     private void ShuffleList<T>(List<T> list)
     {
         for (int i = list.Count - 1; i > 0; i--)
@@ -212,5 +247,9 @@ public class EnemySpawner : MonoBehaviour
     public void OnEnemyKilled()
     {
         _activeEnemiesCount--;
+    }
+    public int GetCurrentWave()
+    {
+        return _currentWaveIndex + 1;
     }
 }

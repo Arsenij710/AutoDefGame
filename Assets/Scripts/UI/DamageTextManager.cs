@@ -24,7 +24,7 @@ public class DamageTextManager : MonoBehaviour
            maxSize: _maxPoolSize
        );
     }
-    public void ShowDamage(Vector3 position, int damageAmount)
+    public void ShowDamage(Vector3 position, int damageAmount, Color color)
     {
         int isDamageVisible = PlayerPrefs.GetInt("ShowDamageNumbers", 1);
         if (_damagePrefab != null && isDamageVisible == 1)
@@ -32,7 +32,7 @@ public class DamageTextManager : MonoBehaviour
             Vector3 spawnPos = position + Vector3.up * 0.5f;
             DamageDisappear damagePopup = _damagePool.Get();
             damagePopup.transform.position = spawnPos;
-            damagePopup.Setup(damageAmount, _damagePool);
+            damagePopup.Setup(damageAmount, _damagePool, color);
         }
     }
 }

@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
 {
-    [Header("Вкладки (Content Panels)")]
+    [Header("Content Panels")]
     [SerializeField] private GameObject _videoContent;
     [SerializeField] private GameObject _audioContent;
     [SerializeField] private GameObject _gameplayContent;
 
-    [Header("Элементы Видео")]
+    [Header("Videp")]
     [SerializeField] private TMP_Dropdown _resolutionDropdown;
     [SerializeField] private Toggle _fullscreenToggle;
     [SerializeField] private Toggle _windowedToggle;
@@ -18,23 +19,65 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Toggle _damageToggle;
     [SerializeField] private Toggle _fpsToggle;
 
-    [Header("Элементы Игры")]
+    [Header("Gameplay")]
     public TMP_InputField nameInputField;
     public TMP_Text placeholderText;
+
+    [Header("Audio")]
+    [SerializeField] private AudioMixer _audioMixer;
+    [SerializeField] private Slider _allSlider;
+    [SerializeField] private Slider _musicSlider;
+    [SerializeField] private Slider _sfxSlider;
 
 
     private List<Resolution> _filteredResolutions;
     private void Start()
     {
+        float savedMaster = PlayerPrefs.GetFloat("MasterVolumeKey", 1f);
+        float savedVolume = PlayerPrefs.GetFloat("MusicVolumeKey", 1f);
+        float savedSFX = PlayerPrefs.GetFloat("SfxVolumeKey", 1f);
+        if (_allSlider != null)
+        {
+            _allSlider.value = savedMaster;
+        }
+        if (_musicSlider != null)
+        {
+            _musicSlider.value = savedVolume;
+        }
+        if (_sfxSlider != null)
+        {
+            _sfxSlider.value = savedSFX;
+        }
+
         string savedName = PlayerPrefs.GetString("PlayerName", "Игрок");
+
         InitResolutions();
         ShowGameplayTab();
+
         _fullscreenToggle.isOn = Screen.fullScreen;
         placeholderText.text = savedName;
         _windowedToggle.isOn = !Screen.fullScreen;
         _vsyncToggle.isOn = (QualitySettings.vSyncCount != 0);
         _fpsToggle.isOn = (PlayerPrefs.GetInt("ShowFps", 0) == 1);
         _damageToggle.isOn = (PlayerPrefs.GetInt("ShowDamageNumbers", 1) == 1);
+    }
+    public void SetMasterVolume(float sliderValue)
+    {
+        float volumeInDb = Mathf.Log10(Mathf.Max(sliderValue, 0.0001f)) * 20f;
+        _audioMixer.SetFloat("MasterVol", volumeInDb);
+        PlayerPrefs.SetFloat("MasterVolumeKey", sliderValue);
+    }
+    public void SetMusicVolume(float sliderValue)
+    {
+        float volumeInDb = Mathf.Log10(Mathf.Max(sliderValue, 0.0001f)) * 20f;
+        _audioMixer.SetFloat("MusicVol", volumeInDb);
+        PlayerPrefs.SetFloat("MusicVolumeKey", sliderValue);
+    }
+    public void SetSFXVolume(float sliderValue)
+    {
+        float volumeInDb = Mathf.Log10(Mathf.Max(sliderValue, 0.0001f)) * 20f;
+        _audioMixer.SetFloat("SfxVol", volumeInDb);
+        PlayerPrefs.SetFloat("SfxVolumeKey", sliderValue);
     }
     public void ShowVideoTab()
     {
@@ -147,13 +190,6 @@ public class SettingManager : MonoBehaviour
         {
             QualitySettings.vSyncCount = 0; 
         }
-    }
-    public void SetMasterVolume(float volume)
-    {
-        // Здесь будет управление через AudioMixer.
-        // volume будет приходить от Slider (значения от 0.0001f до 1f)
-        // Пример перевода в децибелы для микшера: Mathf.Log10(volume) * 20
-        Debug.Log($"Общая громкость: {volume}");
     }
 
     public void SaveName()

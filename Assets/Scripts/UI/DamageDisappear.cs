@@ -17,14 +17,13 @@ public class DamageDisappear : MonoBehaviour
     {
         _textMesh = GetComponentInChildren<TextMeshProUGUI>();
     }
-    public void Setup(float damageAmount, IObjectPool<DamageDisappear> pool)
+    public void Setup(float damageAmount, IObjectPool<DamageDisappear> pool, Color color)
     {
         _myPool = pool;
 
         _textMesh.text = damageAmount.ToString();
-        _textColor = _textMesh.color;
+        _textMesh.color = color;
         _textColor.a = 1f;
-        _textMesh.color = _textColor;
         _moveYSpeed = 1.5f;
 
         _disappearTimer = DISAPPEAR_MAX_TIME; 

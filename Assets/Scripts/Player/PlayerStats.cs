@@ -2,8 +2,8 @@ using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Splines.Interpolators;
 using UnityEngine.UI;
+
 
 public class PlayerStats : MonoBehaviour
 {
@@ -21,12 +21,13 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private Slider _expSlider;
     [SerializeField] private TMP_Text _levelText;
 
-
     [Header("Update Panel")]
     [SerializeField] private UpgradeManager _upgrade;
 
-    [SerializeField] private PlayerData _config; 
+    [SerializeField] private PlayerData _config;
 
+    private DamageTextManager _damageText;
+    private AudioManager _audio;
     private UIHPBar _hpBar;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
@@ -50,6 +51,8 @@ public class PlayerStats : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _rb = GetComponent<Rigidbody2D>();
+        _damageText = FindFirstObjectByType<DamageTextManager>();
+        _audio = FindFirstObjectByType<AudioManager>();
         _levelText.text = currentLevel.ToString();
         originalColor = _spriteRenderer.color;
     }
@@ -121,6 +124,10 @@ public class PlayerStats : MonoBehaviour
         _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
         _animator.SetTrigger("Hurt");
 
+        Color color;
+        UnityEngine.ColorUtility.TryParseHtmlString("#FFFFFF", out color);
+        _damageText.ShowDamage(transform.position, damageAmount, color);
+
         if (_hpBar != null)
         {
             _hpBar.UpdateHealthBar(_currentHealth);
@@ -184,6 +191,7 @@ public class PlayerStats : MonoBehaviour
         if (movement != null) movement.enabled = false;
         if (attack != null) attack.enabled = false;
         _animator.SetTrigger("Death");
+        _audio.PlayPlayerDeath();
 
         FreezeAllEnemies();
         StartCoroutine(GameOverCoroutine());

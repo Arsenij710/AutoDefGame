@@ -14,16 +14,19 @@ public class UIManager : MonoBehaviour
     [Header("Stats text")]
     public TextMeshProUGUI leftText;
     public TextMeshProUGUI rightText;
+    public TextMeshProUGUI currWave;
 
     [Header("GamoOver text")]
     [SerializeField] private TextMeshProUGUI _finalScoreText;  
     [SerializeField] private TextMeshProUGUI _killedEnemiesText;
 
+    private EnemySpawner _spawner;
     private bool _isPaused = false;
     private bool _isGameOver = false;
     private string _name;
     private void Awake()
     {
+        _spawner = FindFirstObjectByType<EnemySpawner>();
         if (PlayerPrefs.HasKey("PlayerName"))
         {
             _name = PlayerPrefs.GetString("PlayerName", "Игрок");
@@ -117,7 +120,7 @@ public class UIManager : MonoBehaviour
     {
         PlayerStats stats = FindFirstObjectByType<PlayerStats>();
         PlayerAttack attack = FindFirstObjectByType<PlayerAttack>();
-
+        currWave.text = $"Текущая волна: {_spawner.GetCurrentWave()}\nУлучшения";
         if (stats != null)
         {
             leftText.text = $"Атака - {stats.Damage}\nХп - {stats.MaxHealth}\nРегенерация Хп - 2\nСкорость атаки - {attack.AttackSpeed}с\nРадиус атаки - {attack.Radius}м";
