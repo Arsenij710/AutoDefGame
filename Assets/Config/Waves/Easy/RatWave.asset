@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8d08a77b8776274cacef8d7ae47c2c5, type: 3}
-  m_Name: SlimeWave
+  m_Name: RatWave
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
-  WaveName: "\u0412\u043E\u043B\u043D\u0430 \u0421\u043B\u0430\u0439\u043C\u043E\u0432"
+  WaveName: "\u041C\u0430\u043B\u0435\u043D\u044C\u043A\u0430\u044F \u0412\u043E\u043B\u043D\u0430
+    \u041A\u0440\u044B\u0441"
   EnemiesInWave:
-  - EnemyConfig: {fileID: 11400000, guid: 995a06033047fc74fbe9b996b33135ae, type: 2}
-    Count: 9
+  - EnemyConfig: {fileID: 11400000, guid: 34815deec9b5b0e4a9b0b9ffa12baf27, type: 2}
+    Count: 10
   SpawnInterval: 0.3
-  Duration: 50
+  Duration: 30

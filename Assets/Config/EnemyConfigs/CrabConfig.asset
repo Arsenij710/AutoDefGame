@@ -18,9 +18,10 @@ MonoBehaviour:
   Speed: 4
   StoppingDistance: 1.2
   MaxHealth: 125
+  ScoreReward: 30
+  Damage: 10
   AttackCooldown: 2
   AttackRadius: 1.8
-  Damage: 10
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 8

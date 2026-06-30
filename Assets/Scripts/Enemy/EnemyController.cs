@@ -15,10 +15,11 @@ public class EnemyController : MonoBehaviour
     private EnemyAttack _attackLogic;
     private Transform _playerTransform;
     private Rigidbody2D _rb;
-    private Canvas _canvas;
     private CapsuleCollider2D _capsuleCollider;
+    private int _scoreReward;
 
     private float _currentHealth;
+    private float _currentAttack;
     private float _nextAttackTime;
     private float _distanceToPlayer;
     private bool _isDead;
@@ -28,11 +29,10 @@ public class EnemyController : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _attackLogic = GetComponent<EnemyAttack>();
-        _canvas = GameObject.FindWithTag("EffectsCanvas").GetComponent<Canvas>();
         _damageText = FindFirstObjectByType<DamageTextManager>();
     }
 
-    public void Initialize(EnemyData newData, Action<EnemyController> release)
+    public void Initialize(EnemyData newData, Action<EnemyController> release, int waveNumber)
     {
         _config = newData;
         _onDeathCallback = release;
@@ -58,8 +58,12 @@ public class EnemyController : MonoBehaviour
             _capsuleCollider.size = _config.colliderSize;
         }
 
-        _currentHealth = _config.MaxHealth;
-        _nextAttackTime = 1f;
+        float healthMultiplier = 1f + (waveNumber - 1) * 0.10f;
+        float damageMultiplier = 1f + (waveNumber - 1) * 0.05f;
+        _currentHealth = _config.MaxHealth * healthMultiplier;
+        _currentAttack = _config.Damage * damageMultiplier;
+        _scoreReward = _config.ScoreReward;
+        _nextAttackTime = 0f;
         _isDead = false;
         _rb.linearVelocity = Vector2.zero;
 
@@ -143,7 +147,7 @@ public class EnemyController : MonoBehaviour
     public void ExecuteAoEDamage()
     {
         if (_isDead || _config == null) return;
-        _attackLogic.PerformAoEAttack(_rb.position, _config.AttackRadius, _config.Damage, _config.PlayerLayer);
+        _attackLogic.PerformAoEAttack(_rb.position, _config.AttackRadius, (int)_currentAttack, _config.PlayerLayer);
     }
 
     public void TakeDamage(int damage)
@@ -164,6 +168,8 @@ public class EnemyController : MonoBehaviour
     private void Die()
     {
         EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();
+        ScoreManager score = FindFirstObjectByType<ScoreManager>();
+        score.AddScore(_scoreReward);
         
         if (spawner != null)
         {

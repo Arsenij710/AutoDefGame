@@ -15,11 +15,12 @@ public class EnemyData : ScriptableObject
 
     [Header("Stats")]
     public float MaxHealth = 100f;
+    public int ScoreReward = 20;
 
     [Header("Attack Settings")]
+    public int Damage = 10;
     public float AttackCooldown = 3f;
     public float AttackRadius = 1.5f;
-    public int Damage = 10;
     public LayerMask PlayerLayer;
 
     [Header("Collider Settings")]

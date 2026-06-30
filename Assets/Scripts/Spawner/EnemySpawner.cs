@@ -5,16 +5,34 @@ using UnityEngine.Pool;
 
 public class EnemySpawner : MonoBehaviour
 {
+    public enum WaveDifficulty { Easy, Medium, Huge }
+
     [Header("Pool Setup")]
     [SerializeField] private EnemyController _universalPrefab;
     [SerializeField] private int _defaultCapacity = 50;
     [SerializeField] private int _maxPoolSize = 100;
 
     [Header("Wave Setup")]
-    [SerializeField] private List<WaveData> _allWaves; 
+    [SerializeField] private List<WaveData> _easyWaves; 
+    [SerializeField] private List<WaveData> _midWaves; 
+    [SerializeField] private List<WaveData> _hugeWaves; 
     [SerializeField] private Transform _playerTransform; 
     [SerializeField] private float _spawnRadius = 15f;
     [SerializeField] private float _timeBetweenWaves = 3f;
+    
+    [Header("Levels Sequence")]
+    [SerializeField] private List<WaveDifficulty> waveStructure = new List<WaveDifficulty>()
+    {
+        WaveDifficulty.Easy,
+        WaveDifficulty.Easy,  
+        WaveDifficulty.Easy,  
+        WaveDifficulty.Medium,
+        WaveDifficulty.Easy,
+        WaveDifficulty.Medium,
+        WaveDifficulty.Easy,
+        WaveDifficulty.Medium,
+        WaveDifficulty.Huge
+    };
 
     [Header("Map Bounds")]
     [SerializeField] private EdgeCollider2D _mapEdgeCollider; 
@@ -51,7 +69,7 @@ public class EnemySpawner : MonoBehaviour
     }
     private void Start()
     {
-        if (_allWaves.Count > 0 && _playerTransform != null)
+        if (waveStructure.Count > 0  && _playerTransform != null)
         {
             StartCoroutine(StartNextWave());
         }
@@ -59,9 +77,11 @@ public class EnemySpawner : MonoBehaviour
     private IEnumerator StartNextWave()
     {
         yield return new WaitForSeconds(_timeBetweenWaves);
-        while (_currentWaveIndex < _allWaves.Count)
+        while (_currentWaveIndex < waveStructure.Count)
         {
-            WaveData currentWave = _allWaves[_currentWaveIndex];
+            WaveDifficulty requiredDifficulty = waveStructure[_currentWaveIndex];
+            WaveData currentWave = GetRandomWaveFromPool(requiredDifficulty);
+
             _isSpawning = true;
             StartCoroutine(SpawnWaveEnemies(currentWave));
 
@@ -84,6 +104,20 @@ public class EnemySpawner : MonoBehaviour
             
 
             yield return new WaitForSeconds(_timeBetweenWaves);
+        }
+    }
+    private WaveData GetRandomWaveFromPool(WaveDifficulty difficulty)
+    {
+        switch (difficulty)
+        {
+            case WaveDifficulty.Easy:
+                return _easyWaves[Random.Range(0, _easyWaves.Count)];
+            case WaveDifficulty.Medium:
+                return _midWaves[Random.Range(0, _midWaves.Count)];
+            case WaveDifficulty.Huge:
+                return _hugeWaves[Random.Range(0, _hugeWaves.Count)];
+            default:
+                return _easyWaves[0];
         }
     }
     private IEnumerator SpawnWaveEnemies(WaveData wave)
@@ -109,7 +143,7 @@ public class EnemySpawner : MonoBehaviour
             EnemyController enemy = _enemyPool.Get();
             enemy.transform.position = spawnPosition;
 
-            enemy.Initialize(currentEnemyData, (e) => _enemyPool.Release(e));
+            enemy.Initialize(currentEnemyData, (e) => _enemyPool.Release(e), _currentWaveIndex + 1);
 
             spawnedCount++;
             _activeEnemiesCount++;

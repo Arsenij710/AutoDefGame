@@ -9,20 +9,25 @@ public class UIManager : MonoBehaviour
     [Header("UI Panels")]
     [SerializeField] private GameObject _pauseMenuPanel;
     [SerializeField] private GameObject _gameOverPanel;
-    [SerializeField] private TMP_Text _name;
+    [SerializeField] private TMP_Text _nameText;
 
     [Header("Stats text")]
     public TextMeshProUGUI leftText;
     public TextMeshProUGUI rightText;
 
+    [Header("GamoOver text")]
+    [SerializeField] private TextMeshProUGUI _finalScoreText;  
+    [SerializeField] private TextMeshProUGUI _killedEnemiesText;
+
     private bool _isPaused = false;
     private bool _isGameOver = false;
+    private string _name;
     private void Awake()
     {
         if (PlayerPrefs.HasKey("PlayerName"))
         {
-            string savedName = PlayerPrefs.GetString("PlayerName", "Игрок");
-            _name.text = savedName;
+            _name = PlayerPrefs.GetString("PlayerName", "Игрок");
+            _nameText.text = _name;
         }
     }
     private void Update()
@@ -62,6 +67,8 @@ public class UIManager : MonoBehaviour
         _isGameOver = true;
         float currentTime = 0f;
         _gameOverPanel.SetActive(true);
+        ChangeGameoverText();
+
         CanvasGroup restartCanvasGroup = _gameOverPanel.GetComponent<CanvasGroup>();
         while (currentTime < 1f)
         {
@@ -72,6 +79,25 @@ public class UIManager : MonoBehaviour
 
         restartCanvasGroup.alpha = 1f;
         Time.timeScale = 0f;
+    }
+    private void ChangeGameoverText()
+    {
+        ScoreManager score = FindFirstObjectByType<ScoreManager>(); 
+        int highScore = PlayerPrefs.GetInt("Record", 0);
+        int _currentScore = score.GetCurrentScore();
+        if (_currentScore > highScore)
+        {
+            PlayerPrefs.SetInt("Record", _currentScore);
+            PlayerPrefs.Save();
+            _finalScoreText.text = $"Новый рекорд!\n{_name} - {_currentScore}";
+        }
+        else
+        {
+            _finalScoreText.text = $"Рекорд не побит!\n{_name} - {highScore}\nВаш текущий счёт: \n{_currentScore}";
+
+        }
+
+        _killedEnemiesText.text = $"Врагов убито: {score.GetEnemyKilledCount()}";
     }
 
     public void QuitToMenu()

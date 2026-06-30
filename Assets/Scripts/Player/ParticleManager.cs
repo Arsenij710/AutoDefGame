@@ -39,7 +39,7 @@ public class ParticleManager : MonoBehaviour
 
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (_playerTransform == null) return;
 
@@ -50,8 +50,6 @@ public class ParticleManager : MonoBehaviour
         for (int i = 0; i < numParticlesAlive; i++)
         {
             Vector3 particleWorldPos = _particles[i].position;
-            particleWorldPos.z = 0f;
-
             float distance = Vector3.Distance(particleWorldPos, playerPos);
 
             if (distance <= _magnetRadius)
@@ -67,10 +65,9 @@ public class ParticleManager : MonoBehaviour
                         _playerStats.AddExperience(_expPerParticle);
                     }
                 }
-                _particles[i].position = particleWorldPos;
             }
+            _particles[i].position = particleWorldPos;
         }
-
         _particleSystem.SetParticles(_particles, numParticlesAlive);
     }
     private void OnDrawGizmosSelected()
