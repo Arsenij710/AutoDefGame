@@ -22,4 +22,4 @@
 Пауза: клавиша "Esc" для вызова меню паузы.
 
 Билд Игры
-https://drive.google.com/file/d/188E07fO18xIrG3hDGAyYjbVm0jUp5GJE/view?usp=sharing
+https://drive.google.com/file/d/1psr0kfqLGCFNwHfdMVrJbPDyr0URe5_t/view?usp=sharing
