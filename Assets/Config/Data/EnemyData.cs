@@ -16,6 +16,7 @@ public class EnemyData : ScriptableObject
     [Header("Stats")]
     public float MaxHealth = 100f;
     public int ScoreReward = 20;
+    public int BaseExp = 20;
 
     [Header("Attack Settings")]
     public int Damage = 10;
@@ -24,5 +25,8 @@ public class EnemyData : ScriptableObject
     public LayerMask PlayerLayer;
 
     [Header("Collider Settings")]
-    public Vector2 colliderSize = new Vector2(1f, 0.7f);     
+    public Vector2 colliderSize = new Vector2(1f, 0.7f);
+
+    [Header("Loot Settings")]
+    public LootTable lootTable;
 }

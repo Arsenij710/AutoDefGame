@@ -16,6 +16,6 @@ MonoBehaviour:
     \u0413\u043E\u043B\u0435\u043C\u043E\u0432"
   EnemiesInWave:
   - EnemyConfig: {fileID: 11400000, guid: d8cafe2dd9969f342be8390a660cea9e, type: 2}
-    Count: 7
+    Count: 5
   SpawnInterval: 0.5
   Duration: 40

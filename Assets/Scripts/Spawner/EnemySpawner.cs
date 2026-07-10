@@ -47,9 +47,11 @@ public class EnemySpawner : MonoBehaviour
     [Header("Update Panel")]
     [SerializeField] private UpgradeManager _upgrade;
 
+    public static EnemySpawner Instance { get; private set; }
 
     private Vector2[] _polygonPoints;
 
+    private PlayerStats player;
     private IObjectPool<EnemyController> _enemyPool;
     private int _currentWaveIndex = 0;
     private bool _isSpawning = false;
@@ -58,6 +60,13 @@ public class EnemySpawner : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         _enemyPool = new ObjectPool<EnemyController>(
             createFunc: () => Instantiate(_universalPrefab, gameObject.transform),
             actionOnGet: (enemy) => { },
@@ -72,6 +81,7 @@ public class EnemySpawner : MonoBehaviour
         {
             _polygonPoints = _mapEdgeCollider.points;
         }
+        player = FindFirstObjectByType<PlayerStats>();
     }
     private void Start()
     {
@@ -82,15 +92,16 @@ public class EnemySpawner : MonoBehaviour
     }
     private IEnumerator StartNextWave()
     {
-        Color colorRew;
-        Color colorNoRew;
-        ColorUtility.TryParseHtmlString("#D48C29", out colorRew);
-        ColorUtility.TryParseHtmlString("#DBC6A9", out colorNoRew);
+        Color colorRew = new Color32(212, 140, 41, 255);
+        Color colorNoRew = new Color32(219, 198, 169, 255);
 
         yield return new WaitForSeconds(_timeBetweenWaves);
-        while (_currentWaveIndex < waveStructure.Count)
+
+        while (true)
         {
-            WaveDifficulty requiredDifficulty = waveStructure[_currentWaveIndex];
+            int structureIndex = _currentWaveIndex % waveStructure.Count;
+
+            WaveDifficulty requiredDifficulty = waveStructure[structureIndex];
             WaveData currentWave = GetRandomWaveFromPool(requiredDifficulty);
             _waveText.text = $"Текущая волна: {_currentWaveIndex + 1}";
             _waveDiffText.text = $"{GetDifficultyName(requiredDifficulty)}";
@@ -168,7 +179,7 @@ public class EnemySpawner : MonoBehaviour
             EnemyController enemy = _enemyPool.Get();
             enemy.transform.position = spawnPosition;
 
-            enemy.Initialize(currentEnemyData, (e) => _enemyPool.Release(e), _currentWaveIndex + 1);
+            enemy.Initialize(currentEnemyData, (e) => _enemyPool.Release(e), _currentWaveIndex + 1, player);
 
             spawnedCount++;
             _activeEnemiesCount++;

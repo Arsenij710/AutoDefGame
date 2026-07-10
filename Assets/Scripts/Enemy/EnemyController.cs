@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.Rendering.STP;
+using UnityEngine.Rendering.Universal;
 
 public class EnemyController : MonoBehaviour
 {
@@ -9,17 +11,17 @@ public class EnemyController : MonoBehaviour
 
     private Action<EnemyController> _onDeathCallback;
 
-    private DamageTextManager _damageText;
     private EnemyData _config;
     private EnemyAttack _attackLogic;
     private Transform _playerTransform;
     private Rigidbody2D _rb;
     private CapsuleCollider2D _capsuleCollider;
-    private AudioManager _audio;
+    private EnemyLoot _enemyLoot;
     private int _scoreReward;
 
     private float _currentHealth;
     private float _currentAttack;
+    private int _rewardExp;
     private float _nextAttackTime;
     private float _distanceToPlayer;
     private bool _isDead;
@@ -29,11 +31,10 @@ public class EnemyController : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _attackLogic = GetComponent<EnemyAttack>();
-        _damageText = FindFirstObjectByType<DamageTextManager>();
-        _audio = FindFirstObjectByType<AudioManager>();
+        _enemyLoot = GetComponent<EnemyLoot>();
     }
 
-    public void Initialize(EnemyData newData, Action<EnemyController> release, int waveNumber)
+    public void Initialize(EnemyData newData, Action<EnemyController> release, int waveNumber, PlayerStats player)
     {
         _config = newData;
         _onDeathCallback = release;
@@ -58,27 +59,25 @@ public class EnemyController : MonoBehaviour
             _capsuleCollider.enabled = true;
             _capsuleCollider.size = _config.colliderSize;
         }
+        if (_enemyLoot != null)
+        {
+            _enemyLoot.InitializeLoot(_config.lootTable);
+        }
 
-        float healthMultiplier = 1f + (waveNumber - 1) * 0.10f;
-        float damageMultiplier = 1f + (waveNumber - 1) * 0.05f;
+        float healthMultiplier = Mathf.Pow(1.10f, waveNumber - 1);
+        float damageMultiplier = Mathf.Pow(1.08f, waveNumber - 1);
+        float expMultiplier = Mathf.Pow(1.07f, waveNumber - 1);
+
         _currentHealth = _config.MaxHealth * healthMultiplier;
         _currentAttack = _config.Damage * damageMultiplier;
         _scoreReward = _config.ScoreReward;
+        _rewardExp = Mathf.RoundToInt(_config.BaseExp * expMultiplier);
         _nextAttackTime = 0f;
         _isDead = false;
         _rb.linearVelocity = Vector2.zero;
 
-        FindPlayer();
+        _playerTransform = player.transform;
 
-    }
-
-    private void FindPlayer()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            _playerTransform = player.transform;
-        }
     }
 
     private void Update()
@@ -155,9 +154,8 @@ public class EnemyController : MonoBehaviour
     {
         if (_isDead) return;
         _currentHealth -= damage;
-        Color color;
-        ColorUtility.TryParseHtmlString("#FD918C", out color);
-        _damageText.ShowDamage(transform.position, damage, color);
+        Color color = new Color32(253, 145, 140, 255);
+        DamageTextManager.Instance.ShowDamage(transform.position, damage, color);
         if (_currentHealth <= 0)
         {
             Die();
@@ -170,18 +168,13 @@ public class EnemyController : MonoBehaviour
 
     private void Die()
     {
-        EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();
-        ScoreManager score = FindFirstObjectByType<ScoreManager>();
-        score.AddScore(_scoreReward);
+        ScoreManager.Instance.AddScore(_scoreReward);
+        EnemySpawner.Instance.OnEnemyKilled();
         
-        if (spawner != null)
-        {
-            spawner.OnEnemyKilled();
-        }
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
         _animator.SetTrigger("Death");
-        _audio.PlayEnemyDeath();
+        AudioManager.Instance.PlayEnemyDeath();
         _capsuleCollider.enabled = false;
 
         StartCoroutine(WaitForDeathAnimationCoroutine());
@@ -194,8 +187,9 @@ public class EnemyController : MonoBehaviour
         float animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
 
-        ParticleManager particle = FindFirstObjectByType<ParticleManager>();
-        particle.SpawnExperience(transform.position, 1);
+        ParticleManager.Instance.SpawnExperience(transform.position, _rewardExp);
+        _enemyLoot.TryDropLoot();
+
         _onDeathCallback?.Invoke(this);
     }
 

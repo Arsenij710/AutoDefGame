@@ -1,5 +1,3 @@
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -11,9 +9,17 @@ public class DamageTextManager : MonoBehaviour
     [SerializeField] private int _defaultCapacity = 10;
     [SerializeField] private int _maxPoolSize = 50;
 
+    public static DamageTextManager Instance { get; private set; }
     private ObjectPool<DamageDisappear> _damagePool;
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         _damagePool = new ObjectPool<DamageDisappear>(
            createFunc: () => Instantiate(_damagePrefab, transform),
            actionOnGet: (dmg) => dmg.gameObject.SetActive(true),

@@ -26,9 +26,6 @@ public class PlayerStats : MonoBehaviour
 
     [SerializeField] private PlayerData _config;
 
-    private DamageTextManager _damageText;
-    private AudioManager _audio;
-    private UIHPBar _hpBar;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private Rigidbody2D _rb;
@@ -58,12 +55,13 @@ public class PlayerStats : MonoBehaviour
         {
             float currentDamage = _config.baseDamage;
             float percent = PlayerData.DamageBonusPerLevel;
-            int flatBonus = 5; 
+            int flatBonus = 5;
 
-            for (int i = 0; i < _damageUpgradesCount; i++)
-            {
-                currentDamage = (currentDamage + flatBonus) * (1f + percent);
-            }
+            float exponentialDamage = currentDamage * Mathf.Pow(1f + percent, _damageUpgradesCount);
+
+            float totalFlatBonus = _damageUpgradesCount * flatBonus;
+
+            currentDamage = exponentialDamage + totalFlatBonus;
 
             return Mathf.RoundToInt(currentDamage);
         }
@@ -72,23 +70,17 @@ public class PlayerStats : MonoBehaviour
 
     private void Awake()
     {
-        _hpBar = FindAnyObjectByType<UIHPBar>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _rb = GetComponent<Rigidbody2D>();
-        _damageText = FindFirstObjectByType<DamageTextManager>();
-        _audio = FindFirstObjectByType<AudioManager>();
         _levelText.text = currentLevel.ToString();
         originalColor = _spriteRenderer.color;
     }
     private void Start()
     {
         _currentHealth = MaxHealth;
-
-        if (_hpBar != null)
-        {
-            _hpBar.SetupMaxHealth(MaxHealth);
-        }
+        UIHPBar.Instance.SetupMaxHealth(MaxHealth);
+        
     }
     public void AddExperience(int amount)
     {
@@ -106,7 +98,7 @@ public class PlayerStats : MonoBehaviour
         currentExp -= expToNextLevel;
         currentLevel++;
         _levelText.text = currentLevel.ToString();
-        expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.2f) + 50;
+        expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.15f) + 50;
 
 
         if (_upgrade != null)
@@ -125,19 +117,14 @@ public class PlayerStats : MonoBehaviour
 
     public void UpgradeMaxHealth()
     {
-        Debug.Log(_currentHealth);
-        Debug.Log(MaxHealth);
         int oldMaxHealth = MaxHealth;
         _healthUpgradesCount++;
         float healthMultiplier = (float)MaxHealth / oldMaxHealth;
         _currentHealth = Mathf.RoundToInt(_currentHealth * healthMultiplier);
-        Debug.Log(_currentHealth);
-        Debug.Log(MaxHealth);
-        if (_hpBar != null)
-        {
-            _hpBar.SetupMaxHealth(MaxHealth);
-            _hpBar.UpdateHealthBar(_currentHealth);
-        }
+        
+        UIHPBar.Instance.SetupMaxHealth(MaxHealth);
+        UIHPBar.Instance.UpdateHealthBar(_currentHealth);
+        
     }
 
     public void UpgradeDamage()
@@ -154,14 +141,9 @@ public class PlayerStats : MonoBehaviour
         _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
         _animator.SetTrigger("Hurt");
 
-        Color color;
-        UnityEngine.ColorUtility.TryParseHtmlString("#FFFFFF", out color);
-        _damageText.ShowDamage(transform.position, damageAmount, color);
-
-        if (_hpBar != null)
-        {
-            _hpBar.UpdateHealthBar(_currentHealth);
-        }
+        Color color = new Color(1f, 1f, 1f);
+        DamageTextManager.Instance.ShowDamage(transform.position, damageAmount, color);
+        UIHPBar.Instance.UpdateHealthBar(_currentHealth);
 
         if (_currentHealth <= 0)
         {
@@ -204,11 +186,7 @@ public class PlayerStats : MonoBehaviour
     {
         _currentHealth += healAmount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
-
-        if (_hpBar != null)
-        {
-            _hpBar.UpdateHealthBar(_currentHealth);
-        }
+        UIHPBar.Instance.UpdateHealthBar(_currentHealth);
     }
 
     private void Die()
@@ -221,11 +199,10 @@ public class PlayerStats : MonoBehaviour
         if (movement != null) movement.enabled = false;
         if (attack != null) attack.enabled = false;
         _animator.SetTrigger("Death");
-        _audio.PlayPlayerDeath();
+        AudioManager.Instance.PlayPlayerDeath();
 
         FreezeAllEnemies();
         StartCoroutine(GameOverCoroutine());
-
     }
     private void FreezeAllEnemies()
     {
@@ -255,11 +232,7 @@ public class PlayerStats : MonoBehaviour
     private IEnumerator GameOverCoroutine()
     {
         yield return new WaitForSeconds(delayBeforeUI);
-        UIManager uiManager = FindFirstObjectByType<UIManager>();
 
-        if (uiManager != null)
-        {
-            uiManager.StartCoroutine(uiManager.TriggerGameOver());
-        }
+        UIManager.Instance.StartCoroutine(UIManager.Instance.TriggerGameOver());
     }
 }

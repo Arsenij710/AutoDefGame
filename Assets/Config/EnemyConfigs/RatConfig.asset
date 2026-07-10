@@ -18,10 +18,13 @@ MonoBehaviour:
   Speed: 4
   StoppingDistance: 1.2
   MaxHealth: 100
+  ScoreReward: 20
+  BaseExp: 10
+  Damage: 5
   AttackCooldown: 2
   AttackRadius: 1.7
-  Damage: 5
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 8
   colliderSize: {x: 1, y: 0.7}
+  lootTable: {fileID: 11400000, guid: 48be130a2b5654848b5a0c253f8496bc, type: 2}

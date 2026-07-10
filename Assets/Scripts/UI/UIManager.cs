@@ -2,7 +2,6 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -20,13 +19,20 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _finalScoreText;  
     [SerializeField] private TextMeshProUGUI _killedEnemiesText;
 
-    private EnemySpawner _spawner;
+    public static UIManager Instance { get; private set; }
+
     private bool _isPaused = false;
     private bool _isGameOver = false;
     private string _name;
     private void Awake()
     {
-        _spawner = FindFirstObjectByType<EnemySpawner>();
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         if (PlayerPrefs.HasKey("PlayerName"))
         {
             _name = PlayerPrefs.GetString("PlayerName", "Игрок");
@@ -88,10 +94,9 @@ public class UIManager : MonoBehaviour
     }
     private void ChangeGameoverText()
     {
-        ScoreManager score = FindFirstObjectByType<ScoreManager>(); 
         int highScore = PlayerPrefs.GetInt("Record", 0);
         string highScoreaName = PlayerPrefs.GetString("RecordName", "Игрок");
-        int _currentScore = score.GetCurrentScore();
+        int _currentScore = ScoreManager.Instance.GetCurrentScore();
         if (_currentScore > highScore)
         {
             PlayerPrefs.SetInt("Record", _currentScore);
@@ -105,7 +110,7 @@ public class UIManager : MonoBehaviour
 
         }
 
-        _killedEnemiesText.text = $"Врагов убито: {score.GetEnemyKilledCount()}";
+        _killedEnemiesText.text = $"Врагов убито: {ScoreManager.Instance.GetEnemyKilledCount()}";
     }
 
     public void QuitToMenu()
@@ -126,7 +131,7 @@ public class UIManager : MonoBehaviour
     {
         PlayerStats stats = FindFirstObjectByType<PlayerStats>();
         PlayerAttack attack = FindFirstObjectByType<PlayerAttack>();
-        currWave.text = $"Текущая волна: {_spawner.GetCurrentWave()}\nУлучшения";
+        currWave.text = $"Текущая волна: {EnemySpawner.Instance.GetCurrentWave()}\nУлучшения";
         if (stats != null)
         {
             leftText.text = $"Атака - {stats.Damage}\nХп - {stats.MaxHealth}\nРегенерация Хп - 2\nСкорость атаки - {attack.AttackSpeed}с\nРадиус атаки - {attack.Radius}м";

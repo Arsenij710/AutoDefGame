@@ -11,7 +11,7 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private GameObject _audioContent;
     [SerializeField] private GameObject _gameplayContent;
 
-    [Header("Videp")]
+    [Header("Video")]
     [SerializeField] private TMP_Dropdown _resolutionDropdown;
     [SerializeField] private Toggle _fullscreenToggle;
     [SerializeField] private Toggle _windowedToggle;

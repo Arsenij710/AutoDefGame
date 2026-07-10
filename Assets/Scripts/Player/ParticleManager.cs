@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ParticleManager : MonoBehaviour
 {
 
-    [Header("Настройки притягивания")]
+    [Header("Exp Settings")]
     [SerializeField] private float _magnetRadius = 4f; 
     [SerializeField] private float _flySpeed = 10f;
     [SerializeField] private int _expPerParticle = 20; 
+
+    public static ParticleManager Instance { get; private set; }
 
     private ParticleSystem _particleSystem;
     private ParticleSystem.Particle[] _particles;
@@ -14,8 +17,14 @@ public class ParticleManager : MonoBehaviour
     private PlayerStats _playerStats;
     void Awake()
     {
-        _particleSystem = GetComponent<ParticleSystem>();
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
 
+        _particleSystem = GetComponent<ParticleSystem>();
         _particles = new ParticleSystem.Particle[_particleSystem.main.maxParticles];
     }
     void Start()
@@ -27,16 +36,15 @@ public class ParticleManager : MonoBehaviour
             _playerStats = player;
         }
     }
-    public void SpawnExperience(Vector3 position, int amountOfParticles)
+    public void SpawnExperience(Vector3 position, int totalExp)
     {
         Vector3 spawnPosition = new Vector3(position.x, position.y, 0f);
-        var emitParams = new ParticleSystem.EmitParams
-        {
-            position = spawnPosition
-        };
 
-        _particleSystem.Emit(emitParams, amountOfParticles);
+        var emitParams = new ParticleSystem.EmitParams();
+        emitParams.position = spawnPosition;
+        emitParams.randomSeed = (uint)totalExp;
 
+        _particleSystem.Emit(emitParams, 1);
     }
 
     void LateUpdate()
@@ -58,11 +66,14 @@ public class ParticleManager : MonoBehaviour
 
                 if (distance < 0.2f)
                 {
+                    uint expFromSeed = _particles[i].randomSeed;
+                    int finalExp = expFromSeed > 0 ? (int)expFromSeed : _expPerParticle;
+
                     _particles[i].remainingLifetime = 0;
 
                     if (_playerStats != null)
                     {
-                        _playerStats.AddExperience(_expPerParticle);
+                        _playerStats.AddExperience(finalExp);
                     }
                 }
             }
