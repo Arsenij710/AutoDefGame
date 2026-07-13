@@ -1,6 +1,5 @@
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +8,8 @@ public class PlayerStats : MonoBehaviour
 {
     [Header("Invincibility Settings")]
     public float invincibilityDuration = 1.0f; 
-    private bool isInvincible = false;
+    public bool isInvincible { get; set; } = false;
+    private float _nextRegenTime;
 
     [Header("DeathSettings")]
     public float delayBeforeUI = 1.2f;
@@ -31,14 +31,16 @@ public class PlayerStats : MonoBehaviour
     private Rigidbody2D _rb;
     private Color originalColor;
     public float flashInterval = 0.1f;
-    private int _currentHealth;
+    private float _currentHealth;
     private bool isDead = false;
 
     private int _healthUpgradesCount = 0;
-    private int _damageUpgradesCount = 0;
+    private int _hpRegenUpgradesCount = 0;
+    private int _missUpgradesCount = 0;
+    
 
     
-    public int MaxHealth
+    public float MaxHealth
     {
         get
         {
@@ -46,27 +48,15 @@ public class PlayerStats : MonoBehaviour
 
             float multiplier = Mathf.Pow(1f + percentageBonus, _healthUpgradesCount);
 
-            return Mathf.RoundToInt(_config.baseMaxHealth * multiplier);
+            return _config.baseMaxHealth * multiplier;
         }
     }
-    public int Damage
-    {
-        get
-        {
-            float currentDamage = _config.baseDamage;
-            float percent = PlayerData.DamageBonusPerLevel;
-            int flatBonus = 5;
+    
+    public float CurrentHealth => _currentHealth;
+    public float HpRegenPercent => (_config.baseHPRegen + PlayerData.HPRegenBonusPerLevel * _hpRegenUpgradesCount);
+    public float TotalHpPerSecond => Mathf.Clamp(MaxHealth * HpRegenPercent, 0, MaxHealth * 0.50f);
+    public float TotalDodgeChance => Mathf.Clamp(_config.baseMiss + _missUpgradesCount * PlayerData.MissBonusPerLevel, 0f, 80f);
 
-            float exponentialDamage = currentDamage * Mathf.Pow(1f + percent, _damageUpgradesCount);
-
-            float totalFlatBonus = _damageUpgradesCount * flatBonus;
-
-            currentDamage = exponentialDamage + totalFlatBonus;
-
-            return Mathf.RoundToInt(currentDamage);
-        }
-    } 
-    public int CurrentHealth => _currentHealth;
 
     private void Awake()
     {
@@ -80,7 +70,22 @@ public class PlayerStats : MonoBehaviour
     {
         _currentHealth = MaxHealth;
         UIHPBar.Instance.SetupMaxHealth(MaxHealth);
-        
+        StartCoroutine(RegenerationRoutine());
+    }
+    private IEnumerator RegenerationRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+
+            if (Time.time >= _nextRegenTime && _currentHealth < MaxHealth)
+            {
+                _currentHealth += TotalHpPerSecond;
+                _currentHealth = Mathf.Min(_currentHealth, MaxHealth);
+                UIHPBar.Instance.UpdateHealthBar(_currentHealth);
+
+            }
+        }
     }
     public void AddExperience(int amount)
     {
@@ -117,7 +122,7 @@ public class PlayerStats : MonoBehaviour
 
     public void UpgradeMaxHealth()
     {
-        int oldMaxHealth = MaxHealth;
+        float oldMaxHealth = MaxHealth;
         _healthUpgradesCount++;
         float healthMultiplier = (float)MaxHealth / oldMaxHealth;
         _currentHealth = Mathf.RoundToInt(_currentHealth * healthMultiplier);
@@ -126,23 +131,37 @@ public class PlayerStats : MonoBehaviour
         UIHPBar.Instance.UpdateHealthBar(_currentHealth);
         
     }
-
-    public void UpgradeDamage()
+    
+    public void HPRegenUpgrade()
     {
-        _damageUpgradesCount++;
+        _hpRegenUpgradesCount++;
     }
+    public void MissUpgrade()
+    {
+        _missUpgradesCount++;
+    }
+    
 
     public void TakeDamage(int damageAmount)
     {
         if (isInvincible) return;
         if (isDead) return;
 
+        float roll = Random.Range(0f, 100f);
+        Color color;
+        if (roll <= TotalDodgeChance)
+        {
+            color = new Color32(100, 250, 220, 255);
+            DropingTextManager.Instance.ShowDropingText(transform.position, damageAmount, color, isMiss:true);
+            return;
+        }
+        color = new Color(1f, 1f, 1f);
         _currentHealth -= damageAmount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
+        _nextRegenTime = Time.time + invincibilityDuration;
         _animator.SetTrigger("Hurt");
 
-        Color color = new Color(1f, 1f, 1f);
-        DamageTextManager.Instance.ShowDamage(transform.position, damageAmount, color);
+        DropingTextManager.Instance.ShowDropingText(transform.position, damageAmount, color);
         UIHPBar.Instance.UpdateHealthBar(_currentHealth);
 
         if (_currentHealth <= 0)
@@ -186,6 +205,8 @@ public class PlayerStats : MonoBehaviour
     {
         _currentHealth += healAmount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
+        Color color = new Color(0.168f, 0.938f, 0.294f);
+        DropingTextManager.Instance.ShowDropingText(transform.position, healAmount, color);
         UIHPBar.Instance.UpdateHealthBar(_currentHealth);
     }
 

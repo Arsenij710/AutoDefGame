@@ -21,11 +21,16 @@ public class UIManager : MonoBehaviour
 
     public static UIManager Instance { get; private set; }
 
+
+    PlayerStats stats;
+    PlayerAttack attack;
     private bool _isPaused = false;
     private bool _isGameOver = false;
     private string _name;
     private void Awake()
     {
+        stats = FindFirstObjectByType<PlayerStats>();
+        attack = stats.GetComponent<PlayerAttack>();
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -129,13 +134,11 @@ public class UIManager : MonoBehaviour
 
     private void UpdatePlayerStatsUI()
     {
-        PlayerStats stats = FindFirstObjectByType<PlayerStats>();
-        PlayerAttack attack = FindFirstObjectByType<PlayerAttack>();
         currWave.text = $"Текущая волна: {EnemySpawner.Instance.GetCurrentWave()}\nУлучшения";
         if (stats != null)
         {
-            leftText.text = $"Атака - {stats.Damage}\nХп - {stats.MaxHealth}\nРегенерация Хп - 2\nСкорость атаки - {attack.AttackSpeed}с\nРадиус атаки - {attack.Radius}м";
-            rightText.text = $"Шанс крита - 56%\nКрит урон - 120%\nШанс уворота - 15%\nШанс повторной атаки - 3%";
+            leftText.text = $"Атака - {attack.Damage}\nХп - {(int)stats.MaxHealth}\nРегенерация Хп - {stats.HpRegenPercent * 100}%\nСкорость атаки - {attack.AttackSpeed}с\nРадиус атаки - {attack.Radius}м";
+            rightText.text = $"Шанс крита - {attack.CritChance}%\nКрит урон - {attack.CritDamage * 100}%\nШанс уворота - {stats.TotalDodgeChance}%\nШанс повторной атаки - {attack.TotalDoubleStrikeChance}%";
         }
     }
 

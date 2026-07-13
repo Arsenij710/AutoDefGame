@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a242f9a1a4db3a4b8c5865fd5bc0b65, type: 3}
   m_Name: GolemDrop
   m_EditorClassIdentifier: Assembly-CSharp::LootTable
-  generalDropChance: 15
+  generalDropChance: 10
   possibleDrops:
   - itemPrefab: {fileID: 5845552567691057937, guid: 14ab1fd75d73d5c45bff9cbd3dc4fbce, type: 3}
     weight: 60

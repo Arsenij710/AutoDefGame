@@ -1,11 +1,20 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using static UnityEngine.Rendering.STP;
-using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
+    [Header("UI HP")]
+    [SerializeField] private Slider _hpSlider;
+    [SerializeField] private CanvasGroup _canvasGroup;
+
+    [Header("Vanish Settings")]
+    [SerializeField] private float _visibleDuration = 2f;
+    [SerializeField] private float _fadeDuration = 0.5f;
+
+    private Coroutine _fadeCoroutine;
+
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Animator _animator;
 
@@ -33,6 +42,7 @@ public class EnemyController : MonoBehaviour
         _attackLogic = GetComponent<EnemyAttack>();
         _enemyLoot = GetComponent<EnemyLoot>();
     }
+
 
     public void Initialize(EnemyData newData, Action<EnemyController> release, int waveNumber, PlayerStats player)
     {
@@ -78,6 +88,15 @@ public class EnemyController : MonoBehaviour
 
         _playerTransform = player.transform;
 
+        if (_hpSlider != null)
+        {
+            _hpSlider.maxValue = _currentHealth;
+            _hpSlider.value = _currentHealth;
+        }
+        if (_canvasGroup != null)
+        {
+            _canvasGroup.alpha = 0f;
+        }
     }
 
     private void Update()
@@ -150,12 +169,33 @@ public class EnemyController : MonoBehaviour
         _attackLogic.PerformAoEAttack(_rb.position, _config.AttackRadius, (int)_currentAttack, _config.PlayerLayer);
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, bool isCrit)
     {
         if (_isDead) return;
         _currentHealth -= damage;
-        Color color = new Color32(253, 145, 140, 255);
-        DamageTextManager.Instance.ShowDamage(transform.position, damage, color);
+
+        if (_hpSlider != null)
+        {
+            _hpSlider.value = _currentHealth;
+        }
+        if (_canvasGroup != null)
+        {
+            if (_fadeCoroutine != null)
+            {
+                StopCoroutine(_fadeCoroutine);
+            }
+            _fadeCoroutine = StartCoroutine(FadeHPBarRoutine());
+        }
+        Color color;
+        if (isCrit)
+        {
+            color = new Color32(255, 40, 25, 255);
+        }
+        else
+        {
+            color = new Color32(253, 145, 140, 255);
+        }
+        DropingTextManager.Instance.ShowDropingText(transform.position, damage, color, isCrit);
         if (_currentHealth <= 0)
         {
             Die();
@@ -164,6 +204,23 @@ public class EnemyController : MonoBehaviour
         {
             _animator.SetTrigger("Hit");
         }
+    }
+    private IEnumerator FadeHPBarRoutine()
+    {
+        _canvasGroup.alpha = 1f;
+
+        yield return new WaitForSeconds(_visibleDuration);
+
+        float timer = 0f;
+        while (timer < _fadeDuration)
+        {
+            timer += Time.deltaTime;
+            _canvasGroup.alpha = Mathf.Lerp(1f, 0f, timer / _fadeDuration);
+            yield return null;
+        }
+
+        _canvasGroup.alpha = 0f;
+        _fadeCoroutine = null;
     }
 
     private void Die()

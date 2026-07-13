@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a242f9a1a4db3a4b8c5865fd5bc0b65, type: 3}
   m_Name: CrabDrop
   m_EditorClassIdentifier: Assembly-CSharp::LootTable
-  generalDropChance: 8
+  generalDropChance: 5
   possibleDrops:
   - itemPrefab: {fileID: 964253374881723672, guid: 9f73af2c6c72d8543a09985e0a5ef37e, type: 3}
     weight: 60

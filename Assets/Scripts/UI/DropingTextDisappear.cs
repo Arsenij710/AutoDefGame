@@ -2,13 +2,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class DamageDisappear : MonoBehaviour
+public class DropingTextDisappear : MonoBehaviour
 {
     private TextMeshProUGUI _textMesh;
     private float _disappearTimer;
     private Color _textColor;
 
-    private IObjectPool<DamageDisappear> _myPool;
+    private IObjectPool<DropingTextDisappear> _myPool;
 
     private const float DISAPPEAR_MAX_TIME = 0.5f; 
     private float _moveYSpeed = 1.5f;
@@ -17,11 +17,22 @@ public class DamageDisappear : MonoBehaviour
     {
         _textMesh = GetComponentInChildren<TextMeshProUGUI>();
     }
-    public void Setup(float damageAmount, IObjectPool<DamageDisappear> pool, Color color)
+    public void Setup(float amount, IObjectPool<DropingTextDisappear> pool, Color color, bool isCrit=false, bool isMiss=false)
     {
         _myPool = pool;
+        if (isCrit)
+        {
+            _textMesh.text = $"Крит!!\n{amount.ToString()}";
+        }
+        else if (isMiss)
+        {
+            _textMesh.text = $"Уклонение!!!";
 
-        _textMesh.text = damageAmount.ToString();
+        }
+        else
+        {
+            _textMesh.text = amount.ToString();
+        }
         _textMesh.color = color;
         _textColor.a = 1f;
         _moveYSpeed = 1.5f;

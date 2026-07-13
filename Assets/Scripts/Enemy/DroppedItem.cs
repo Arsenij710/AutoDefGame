@@ -6,7 +6,7 @@ public class DroppedItem : MonoBehaviour
     [Header("Loot settings")]
     [SerializeField] private GameObject myPrefab;
 
-    public enum LootType { Health, Artifact, Coin, Ammo }
+    public enum LootType { Health, Artifact }
     public LootType lootType;
 
     [Header("Drop Jump Settings")]
@@ -113,11 +113,6 @@ public class DroppedItem : MonoBehaviour
             case LootType.Artifact:
                 // player.GetComponent<PlayerInventory>().AddArtifact(value);
                 Debug.Log($"Подобран артефакт с ID {value}");
-                break;
-
-            case LootType.Coin:
-                // GameManager.Instance.AddMoney(value);
-                Debug.Log($"Подобрано золото: {value}");
                 break;
         }
     }

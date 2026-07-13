@@ -8,25 +8,17 @@ public class UpgradeData : ScriptableObject
 
     [HideInInspector]
     public int currentCount = 0;
-
-    private PlayerStats stats;
-    private PlayerAttack attack;
-    public void ApplyUpgrade()
+    public void ApplyUpgrade(PlayerStats stats, PlayerAttack attack)
     {
         currentCount++;
-        if (stats == null || attack == null)
-        {
-            GameObject player = GameObject.FindWithTag("Player");
-            stats = player.GetComponent<PlayerStats>();
-            attack = player.GetComponent<PlayerAttack>();
-        }
+      
         if (stats != null && attack != null)
         {
             if (upgradeName == "Атака")
             {
-                stats.UpgradeDamage();
+                attack.UpgradeDamage();
             }
-            else if(upgradeName == "Хп")
+            else if (upgradeName == "Хп")
             {
                 stats.UpgradeMaxHealth();
             }
@@ -42,6 +34,26 @@ public class UpgradeData : ScriptableObject
             {
                 attack.UpgradeRadius();
             }
+            else if (upgradeName == "Регенерация ХП")
+            {
+                stats.HPRegenUpgrade();
+            }
+            else if (upgradeName == "Крит Урон")
+            {
+                attack.CritDamageUpgrade();
+            }
+            else if (upgradeName == "Крит Шанс")
+            {
+                attack.CritChanceUpgrade();
+            }
+            else if (upgradeName == "Уклонение")
+            {
+                stats.MissUpgrade();
+            }
+            else if (upgradeName == "Повторная атака")
+            {
+                attack.ReAttackUpgrade();
+            }
 
         }
     }
@@ -49,11 +61,5 @@ public class UpgradeData : ScriptableObject
     public bool IsMaxedOut()
     {
         return currentCount >= maxCount;
-    }
-    private void OnEnable()
-    {
-        currentCount = 0;
-        stats = null;
-        attack = null;
     }
 }

@@ -11,11 +11,13 @@ public class UpgradeButton : MonoBehaviour
     private Button buttonComponent;
     private UpgradeData currentData;
     private Action onUpgradedCallback;
+    private PlayerStats _stats;
+    private PlayerAttack _attack;
     private void Awake()
     {
         buttonComponent = GetComponent<Button>();
     }
-    public void Setup(UpgradeData data, Action onUpgraded)
+    public void Setup(UpgradeData data, Action onUpgraded, PlayerStats stats, PlayerAttack attack)
     {
         currentData = data;
         onUpgradedCallback = onUpgraded;
@@ -24,6 +26,9 @@ public class UpgradeButton : MonoBehaviour
 
         buttonComponent.onClick.RemoveAllListeners();
         buttonComponent.onClick.AddListener(ClickUpgrade);
+
+        _stats = stats;
+        _attack = attack;
     }
     public void UpdateUI()
     {
@@ -44,7 +49,7 @@ public class UpgradeButton : MonoBehaviour
     {
         if (currentData != null && !currentData.IsMaxedOut())
         {
-            currentData.ApplyUpgrade();
+            currentData.ApplyUpgrade(_stats, _attack);
             onUpgradedCallback?.Invoke(); 
         }
     }

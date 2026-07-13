@@ -15,6 +15,11 @@ MonoBehaviour:
   baseMaxHealth: 100
   baseDamage: 30
   baseMoveSpeed: 8
+  baseHPRegen: 0.005
+  baseCritChance: 0.05
+  baseCritDamage: 1.5
+  baseMiss: 3
+  baseReAttack: 2
   attackCooldown: 1.5
   attackRadius: 1.2
   attackOffset: 0.5

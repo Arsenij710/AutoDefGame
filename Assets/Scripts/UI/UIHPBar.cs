@@ -17,13 +17,13 @@ public class UIHPBar : MonoBehaviour
         _slider = GetComponent<Slider>();
     }
 
-    public void SetupMaxHealth(int maxHealth)
+    public void SetupMaxHealth(float maxHealth)
     {
         _slider.maxValue = maxHealth;
         _slider.value = maxHealth;
     }
 
-    public void UpdateHealthBar(int currentHealth)
+    public void UpdateHealthBar(float currentHealth)
     {
         _slider.value = currentHealth;
     }

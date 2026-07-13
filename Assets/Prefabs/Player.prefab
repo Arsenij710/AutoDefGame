@@ -195,6 +195,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 911180c1913502e4fa22d9bcdb80af6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  _dashSpeed: 10
+  _dashDuration: 0.7
+  _dashCooldown: 1
   _config: {fileID: 11400000, guid: 0e862b457515e19428106609827a38c3, type: 2}
 --- !u!114 &2065359897490071083
 MonoBehaviour:
@@ -231,6 +234,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   _delayBeforeAttack: 0.08
+  _timeBetweenStrikes: 0.1
+  _maxComboStrikes: 5
   _damageSpreadPercent: 0.1
   _config: {fileID: 11400000, guid: 0e862b457515e19428106609827a38c3, type: 2}
   _enemyLayer:

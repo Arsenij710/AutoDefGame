@@ -31,8 +31,10 @@ public class SettingManager : MonoBehaviour
 
 
     private List<Resolution> _filteredResolutions;
+    FpsCounter fps;
     private void Start()
     {
+        fps = FindFirstObjectByType<FpsCounter>();
         float savedMaster = PlayerPrefs.GetFloat("MasterVolumeKey", 1f);
         float savedVolume = PlayerPrefs.GetFloat("MusicVolumeKey", 1f);
         float savedSFX = PlayerPrefs.GetFloat("SfxVolumeKey", 1f);
@@ -59,7 +61,7 @@ public class SettingManager : MonoBehaviour
         _windowedToggle.isOn = !Screen.fullScreen;
         _vsyncToggle.isOn = (QualitySettings.vSyncCount != 0);
         _fpsToggle.isOn = (PlayerPrefs.GetInt("ShowFps", 0) == 1);
-        _damageToggle.isOn = (PlayerPrefs.GetInt("ShowDamageNumbers", 1) == 1);
+        _damageToggle.isOn = (PlayerPrefs.GetInt("ShowDropingNumbers", 1) == 1);
     }
     public void SetMasterVolume(float sliderValue)
     {
@@ -207,16 +209,16 @@ public class SettingManager : MonoBehaviour
             }
         }
     }
-    public void SetDamageNumbersVisibility(bool isVisible)
+    public void SetDropingNumbersVisibility(bool isVisible)
     {
-        PlayerPrefs.SetInt("ShowDamageNumbers", isVisible ? 1 : 0);
+        PlayerPrefs.SetInt("ShowDropingNumbers", isVisible ? 1 : 0);
         PlayerPrefs.Save();
     }
     public void SetFpsVisibility(bool isVisible)
     {
         PlayerPrefs.SetInt("ShowFps", isVisible ? 1 : 0);
         PlayerPrefs.Save();
-        FpsCounter fps = FindFirstObjectByType<FpsCounter>();
+        
         fps.FpsOnOff(isVisible ? 1 : 0);
     }
 }
