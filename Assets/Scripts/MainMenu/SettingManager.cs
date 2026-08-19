@@ -19,7 +19,6 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Toggle _damageToggle;
     [SerializeField] private Toggle _fpsToggle;
 
-    [Header("Gameplay")]
     public TMP_InputField nameInputField;
     public TMP_Text placeholderText;
 
@@ -28,7 +27,6 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Slider _allSlider;
     [SerializeField] private Slider _musicSlider;
     [SerializeField] private Slider _sfxSlider;
-
 
     private List<Resolution> _filteredResolutions;
     FpsCounter fps;

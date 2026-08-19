@@ -18,6 +18,6 @@ MonoBehaviour:
   - EnemyConfig: {fileID: 11400000, guid: 34815deec9b5b0e4a9b0b9ffa12baf27, type: 2}
     Count: 10
   - EnemyConfig: {fileID: 11400000, guid: d8cafe2dd9969f342be8390a660cea9e, type: 2}
-    Count: 5
+    Count: 3
   SpawnInterval: 0.3
   Duration: 40

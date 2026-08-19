@@ -57,7 +57,10 @@ public class EnemySpawner : MonoBehaviour
     private bool _isSpawning = false;
     private int _activeEnemiesCount = 0;
     private float _waveTimer = 0f;
+    private float _currExpMult;
 
+    public int GetCurrentWave => _currentWaveIndex + 1;
+    public float GetExpMult => _currExpMult;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -89,25 +92,35 @@ public class EnemySpawner : MonoBehaviour
         {
             StartCoroutine(StartNextWave());
         }
+        
+        GoldManager.Instance.ResetRunStats();
+        
     }
     private IEnumerator StartNextWave()
     {
         Color colorRew = new Color32(212, 140, 41, 255);
         Color colorNoRew = new Color32(219, 198, 169, 255);
 
-        yield return new WaitForSeconds(_timeBetweenWaves);
 
         while (true)
         {
+
             int structureIndex = _currentWaveIndex % waveStructure.Count;
 
             WaveDifficulty requiredDifficulty = waveStructure[structureIndex];
             WaveData currentWave = GetRandomWaveFromPool(requiredDifficulty);
+
             _waveText.text = $"Текущая волна: {_currentWaveIndex + 1}";
             _waveDiffText.text = $"{GetDifficultyName(requiredDifficulty)}";
             _sliderFillImage.color = colorRew;
+
+            _currExpMult = Mathf.Pow(1.07f, _currentWaveIndex);
+
+            yield return new WaitForSeconds(_timeBetweenWaves);
+
             _isSpawning = true;
             StartCoroutine(SpawnWaveEnemies(currentWave));
+
             yield return null;
 
             float targetTime = currentWave.Duration * 0.8f;
@@ -138,8 +151,6 @@ public class EnemySpawner : MonoBehaviour
             _currentWaveIndex++;
             _waveTimer = 0;
             _timerSlider.value = 0f;
-
-            yield return new WaitForSeconds(_timeBetweenWaves);
         }
     }
     private WaveData GetRandomWaveFromPool(WaveDifficulty difficulty)
@@ -179,7 +190,7 @@ public class EnemySpawner : MonoBehaviour
             EnemyController enemy = _enemyPool.Get();
             enemy.transform.position = spawnPosition;
 
-            enemy.Initialize(currentEnemyData, (e) => _enemyPool.Release(e), _currentWaveIndex + 1, player);
+            enemy.Initialize(currentEnemyData, (e) => _enemyPool.Release(e), player);
 
             spawnedCount++;
             _activeEnemiesCount++;
@@ -258,9 +269,5 @@ public class EnemySpawner : MonoBehaviour
     public void OnEnemyKilled()
     {
         _activeEnemiesCount--;
-    }
-    public int GetCurrentWave()
-    {
-        return _currentWaveIndex + 1;
     }
 }

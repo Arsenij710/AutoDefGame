@@ -9,24 +9,23 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _pauseMenuPanel;
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private TMP_Text _nameText;
-
-    [Header("Stats text")]
-    public TextMeshProUGUI leftText;
-    public TextMeshProUGUI rightText;
-    public TextMeshProUGUI currWave;
+    [SerializeField] private GameObject _warningPanel;
 
     [Header("GamoOver text")]
     [SerializeField] private TextMeshProUGUI _finalScoreText;  
     [SerializeField] private TextMeshProUGUI _killedEnemiesText;
+    [SerializeField] private TextMeshProUGUI _goldEarnedText;
 
     public static UIManager Instance { get; private set; }
+    public static bool IsGameOver { get; private set; }
 
 
     PlayerStats stats;
     PlayerAttack attack;
     private bool _isPaused = false;
-    private bool _isGameOver = false;
     private string _name;
+    private bool _isExitingToMenu = false;
+
     private void Awake()
     {
         stats = FindFirstObjectByType<PlayerStats>();
@@ -46,7 +45,7 @@ public class UIManager : MonoBehaviour
     }
     private void Update()
     {
-        if (_isGameOver) return;
+        if (IsGameOver) return;
         if (UpgradeManager.IsUpgradeOpen) return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -66,8 +65,12 @@ public class UIManager : MonoBehaviour
         ShowCursor();
         _isPaused = true;
         _pauseMenuPanel.SetActive(true);
-        UpdatePlayerStatsUI();
         Time.timeScale = 0f;
+        if (GameStatsManager.Instance != null)
+        {
+            GameStatsManager.Instance.UpdateDisplay();
+            GameStatsManager.Instance.StopTimer();
+        }
     }
 
     public void ResumeGame()
@@ -77,14 +80,20 @@ public class UIManager : MonoBehaviour
         _pauseMenuPanel.SetActive(false); 
 
         Time.timeScale = 1f;
+        if (GameStatsManager.Instance != null)
+        {
+            GameStatsManager.Instance.StartTimer();
+        }
     }
+    
     public IEnumerator TriggerGameOver()
     {
         ShowCursor();
-        _isGameOver = true;
+        IsGameOver = true;
         float currentTime = 0f;
         _gameOverPanel.SetActive(true);
         ChangeGameoverText();
+        GoldManager.Instance.CommitGold();
 
         CanvasGroup restartCanvasGroup = _gameOverPanel.GetComponent<CanvasGroup>();
         while (currentTime < 1f)
@@ -116,30 +125,58 @@ public class UIManager : MonoBehaviour
         }
 
         _killedEnemiesText.text = $"Врагов убито: {ScoreManager.Instance.GetEnemyKilledCount()}";
+
+        
+        int coinsEarned = GoldManager.Instance.GoldEarnedThisRun;
+        _goldEarnedText.text = $"+ {coinsEarned}";
+        
     }
 
     public void QuitToMenu()
     {
-        Time.timeScale = 1f;
-
-        SceneManager.LoadScene("MainMenu"); 
-    }
-    public void Resatrt()
-    {
-        HideCursor();
-        Time.timeScale = 1f;
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); 
-    }
-
-    private void UpdatePlayerStatsUI()
-    {
-        currWave.text = $"Текущая волна: {EnemySpawner.Instance.GetCurrentWave()}\nУлучшения";
-        if (stats != null)
+        if (IsGameOver)
         {
-            leftText.text = $"Атака - {attack.Damage}\nХп - {(int)stats.MaxHealth}\nРегенерация Хп - {stats.HpRegenPercent * 100}%\nСкорость атаки - {attack.AttackSpeed}с\nРадиус атаки - {attack.Radius}м";
-            rightText.text = $"Шанс крита - {attack.CritChance}%\nКрит урон - {attack.CritDamage * 100}%\nШанс уворота - {stats.TotalDodgeChance}%\nШанс повторной атаки - {attack.TotalDoubleStrikeChance}%";
+            Time.timeScale = 1f;
+            SceneManager.LoadScene("MainMenu");
         }
+        else
+        {
+            _isExitingToMenu = true;
+            _warningPanel.SetActive(true);
+        }
+    }
+    public void Restart()
+    {
+        if (IsGameOver)
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        else
+        {
+            _isExitingToMenu = false;
+            _warningPanel.SetActive(true);
+        }
+    }
+    public void ConfirmAction()
+    {
+        Time.timeScale = 1f;
+        GoldManager.Instance.DiscardGold();
+
+        if (_isExitingToMenu)
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            HideCursor();
+        }
+    }
+
+    public void CancelRestart()
+    {
+        _warningPanel.SetActive(false);
     }
 
     private void ShowCursor()

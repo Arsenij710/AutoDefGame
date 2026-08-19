@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Data/EnemyData")]
@@ -29,4 +31,13 @@ public class EnemyData : ScriptableObject
 
     [Header("Loot Settings")]
     public LootTable lootTable;
+
+    [Serializable]
+    public struct Coin
+    {
+        public CoinTypeData coinType;
+        public int count;
+    }
+
+    public List<Coin> Coins;
 }

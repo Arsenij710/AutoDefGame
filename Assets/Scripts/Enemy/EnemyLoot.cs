@@ -9,11 +9,11 @@ public class EnemyLoot : MonoBehaviour
         _currentLootTable = table;
     }
 
-    public void TryDropLoot()
+    public void TryDropLoot(float luckChance)
     {
         if (_currentLootTable == null) return;
 
-        GameObject prefabToSpawn = _currentLootTable.GetRandomDrop();
+        GameObject prefabToSpawn = _currentLootTable.GetRandomDrop(luckChance);
 
         if (prefabToSpawn != null)
         {

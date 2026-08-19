@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b884ee4fb80983a4fa2c473ce97771da, type: 3}
   m_Name: HeroConfig
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
+  ClassName: Warrior
   baseMaxHealth: 100
   baseDamage: 30
   baseMoveSpeed: 8
@@ -20,6 +21,7 @@ MonoBehaviour:
   baseCritDamage: 1.5
   baseMiss: 3
   baseReAttack: 2
+  baseLuck: 1
   attackCooldown: 1.5
   attackRadius: 1.2
   attackOffset: 0.5

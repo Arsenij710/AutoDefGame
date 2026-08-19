@@ -7,7 +7,13 @@ public class ParticleManager : MonoBehaviour
     [Header("Exp Settings")]
     [SerializeField] private float _magnetRadius = 4f; 
     [SerializeField] private float _flySpeed = 10f;
-    [SerializeField] private int _expPerParticle = 20; 
+    [SerializeField] private int _expPerParticle = 20;
+
+    [Header("color Exp")]
+    [SerializeField] private Color _lowExpColor = new Color32(115, 255, 115, 255);
+    [SerializeField] private Color _mediumExpColor = new Color32(50, 180, 255, 255);
+    [SerializeField] private Color _highExpColor = new Color32(200, 80, 255, 255);
+    [SerializeField] private Color _epicExpColor = new Color32(255, 215, 0, 255);
 
     public static ParticleManager Instance { get; private set; }
 
@@ -15,6 +21,7 @@ public class ParticleManager : MonoBehaviour
     private ParticleSystem.Particle[] _particles;
     private Transform _playerTransform;
     private PlayerStats _playerStats;
+    private int _currExp;
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -38,11 +45,15 @@ public class ParticleManager : MonoBehaviour
     }
     public void SpawnExperience(Vector3 position, int totalExp)
     {
+        _currExp = totalExp;
+
         Vector3 spawnPosition = new Vector3(position.x, position.y, 0f);
+        Color finalColor = GetColorForExp();
 
         var emitParams = new ParticleSystem.EmitParams();
         emitParams.position = spawnPosition;
         emitParams.randomSeed = (uint)totalExp;
+        emitParams.startColor = finalColor;
 
         _particleSystem.Emit(emitParams, 1);
     }
@@ -80,6 +91,26 @@ public class ParticleManager : MonoBehaviour
             _particles[i].position = particleWorldPos;
         }
         _particleSystem.SetParticles(_particles, numParticlesAlive);
+    }
+    private Color GetColorForExp()
+    {
+        float mult = EnemySpawner.Instance.GetExpMult;
+        if (_currExp < 25 * mult)
+        {
+            return _lowExpColor;
+        }
+        else if (_currExp <= 45 * mult)
+        {
+            return _mediumExpColor;
+        }
+        else if (_currExp < 100 * mult)
+        {
+            return _highExpColor;
+        }
+        else
+        {
+            return _epicExpColor;
+        }
     }
     private void OnDrawGizmosSelected()
     {

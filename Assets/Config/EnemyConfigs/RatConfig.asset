@@ -28,3 +28,6 @@ MonoBehaviour:
     m_Bits: 8
   colliderSize: {x: 1, y: 0.7}
   lootTable: {fileID: 11400000, guid: 48be130a2b5654848b5a0c253f8496bc, type: 2}
+  Coins:
+  - coinType: {fileID: 11400000, guid: 5783c8bed2acb0c4d83cc6ac4b70be27, type: 2}
+    count: 3

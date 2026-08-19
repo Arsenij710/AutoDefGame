@@ -54,6 +54,10 @@ public class UpgradeData : ScriptableObject
             {
                 attack.ReAttackUpgrade();
             }
+            else if (upgradeName == "Удача")
+            {
+                stats.LuckUpgrade();
+            }
 
         }
     }

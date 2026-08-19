@@ -13,8 +13,13 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float _visibleDuration = 2f;
     [SerializeField] private float _fadeDuration = 0.5f;
 
+    [Header("Avoidance")]
+    [SerializeField] private float _avoidanceForce = 3f;
+    private float _avoidanceRadius;
+
     private Coroutine _fadeCoroutine;
 
+    [Header("Animator")]
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Animator _animator;
 
@@ -23,6 +28,7 @@ public class EnemyController : MonoBehaviour
     private EnemyData _config;
     private EnemyAttack _attackLogic;
     private Transform _playerTransform;
+    private PlayerStats _playerStats;
     private Rigidbody2D _rb;
     private CapsuleCollider2D _capsuleCollider;
     private EnemyLoot _enemyLoot;
@@ -44,11 +50,12 @@ public class EnemyController : MonoBehaviour
     }
 
 
-    public void Initialize(EnemyData newData, Action<EnemyController> release, int waveNumber, PlayerStats player)
+    public void Initialize(EnemyData newData, Action<EnemyController> release, PlayerStats player)
     {
         _config = newData;
         _onDeathCallback = release;
         gameObject.SetActive(true);
+        int waveNumber = EnemySpawner.Instance.GetCurrentWave;
 
         if (_spriteRenderer != null && _config.EnemySprite != null)
         {
@@ -68,6 +75,8 @@ public class EnemyController : MonoBehaviour
         {
             _capsuleCollider.enabled = true;
             _capsuleCollider.size = _config.colliderSize;
+            float maxDimension = Mathf.Max(_capsuleCollider.size.x, _capsuleCollider.size.y);
+            _avoidanceRadius = (maxDimension / 2f) * 1.2f;
         }
         if (_enemyLoot != null)
         {
@@ -87,6 +96,7 @@ public class EnemyController : MonoBehaviour
         _rb.linearVelocity = Vector2.zero;
 
         _playerTransform = player.transform;
+        _playerStats = player.GetComponent<PlayerStats>();
 
         if (_hpSlider != null)
         {
@@ -104,18 +114,20 @@ public class EnemyController : MonoBehaviour
         if (_isDead || _playerTransform == null) return;
 
         _distanceToPlayer = Vector2.Distance(transform.position, _playerTransform.position);
-
         _nextAttackTime += Time.deltaTime;
+
+
+
         if (_nextAttackTime > _config.AttackCooldown)
         {
             if (_animator != null && _distanceToPlayer <= _config.AttackRadius)
             {
-                TryAttack();
                 _animator.SetTrigger("Attack");
             }
 
             _nextAttackTime = 0;
         }
+
     }
     private void FixedUpdate()
     {
@@ -124,12 +136,13 @@ public class EnemyController : MonoBehaviour
 
         if (_distanceToPlayer > _config.StoppingDistance)
         {
+            StartMovement();
             MoveTowardsPlayer();
             _animator.SetBool("Run", true);
         }
         else
         {
-            _rb.linearVelocity = Vector2.zero;
+            StopMovement();
             _animator.SetBool("Run", false);
         }
     }
@@ -137,8 +150,24 @@ public class EnemyController : MonoBehaviour
     private void MoveTowardsPlayer()
     {
         Vector2 direction = ((Vector2)_playerTransform.position - _rb.position).normalized;
-        Vector2 targetVelocity = direction * _config.Speed;
+        Vector2 avoidanceDirection = GetAvoidanceVector();
+        Vector2 finalDirection = direction;
 
+        if (avoidanceDirection.sqrMagnitude > 0.01f)
+        {
+            Vector2 tangentDirection = new Vector2(-avoidanceDirection.y, avoidanceDirection.x).normalized;
+
+            if (Vector2.Dot(tangentDirection, direction) < 0)
+            {
+                tangentDirection = -tangentDirection;
+            }
+
+            finalDirection = (direction + avoidanceDirection * 0.5f + tangentDirection * 0.8f).normalized;
+            Vector2 noise = UnityEngine.Random.insideUnitCircle * 0.1f;
+            finalDirection = (finalDirection + noise).normalized;
+        }
+
+        Vector2 targetVelocity = finalDirection * _config.Speed;
         _rb.linearVelocity = targetVelocity;
 
         if (direction.x > 0.01f)
@@ -148,19 +177,6 @@ public class EnemyController : MonoBehaviour
         else if (direction.x < -0.01f)
         {
             _spriteRenderer.transform.localScale = new Vector3(-1f, 1f, 1f);
-        }
-    }
-    private void TryAttack()
-    {
-        _nextAttackTime += Time.deltaTime;
-        if (_nextAttackTime > _config.AttackCooldown)
-        {
-            if (_animator != null)
-            {
-                _animator.SetTrigger("Attack");
-            }
-
-            _nextAttackTime = 0;
         }
     }
     public void ExecuteAoEDamage()
@@ -173,6 +189,11 @@ public class EnemyController : MonoBehaviour
     {
         if (_isDead) return;
         _currentHealth -= damage;
+
+        if (GameStatsManager.Instance != null)
+        {
+            GameStatsManager.Instance.AddDamage(damage);
+        }
 
         if (_hpSlider != null)
         {
@@ -245,9 +266,74 @@ public class EnemyController : MonoBehaviour
         yield return new WaitForSeconds(animationLength);
 
         ParticleManager.Instance.SpawnExperience(transform.position, _rewardExp);
-        _enemyLoot.TryDropLoot();
+
+        float luckChance = _playerStats.LootChance;
+        _enemyLoot.TryDropLoot(luckChance);
+
+        if (_config != null && CoinPoolManager.Instance != null)
+        {
+            foreach (var coinGroup in _config.Coins)
+            {
+                if (coinGroup.coinType == null) continue;
+
+                for (int i = 0; i < coinGroup.count; i++)
+                {
+                    CoinPoolManager.Instance.SpawnCoin(transform.position, coinGroup.coinType);
+                }
+            }
+        }
 
         _onDeathCallback?.Invoke(this);
+    }
+
+    private Vector2 GetAvoidanceVector()
+    {
+        Vector2 avoidance = Vector2.zero;
+        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, _avoidanceRadius);
+        int neighborCount = 0;
+
+        foreach (var neighbor in neighbors)
+        {
+            if (neighbor.gameObject != this.gameObject && neighbor.CompareTag("Enemy"))
+            {
+                Vector2 awayFromNeighbor = (Vector2)transform.position - (Vector2)neighbor.transform.position;
+                float distance = awayFromNeighbor.magnitude;
+
+                if (distance > 0)
+                {
+                    float strength = Mathf.Clamp01(1f - (distance / _avoidanceRadius));
+                    avoidance += awayFromNeighbor.normalized * strength;
+                    neighborCount++;
+                }
+            }
+        }
+
+        if (neighborCount > 0)
+        {
+            Vector2 finalAvoidance = avoidance * _avoidanceForce;
+
+            if (finalAvoidance.sqrMagnitude < 0.05f)
+                return Vector2.zero;
+
+            return finalAvoidance;
+        }
+
+        return Vector2.zero;
+    }
+    private void StopMovement()
+    {
+        if (_rb == null) return;
+
+        _rb.linearVelocity = Vector2.zero;
+
+        _rb.constraints = RigidbodyConstraints2D.FreezePosition | RigidbodyConstraints2D.FreezeRotation;
+    }
+
+    private void StartMovement()
+    {
+        if (_rb == null) return;
+
+        _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
     private void OnDrawGizmosSelected()

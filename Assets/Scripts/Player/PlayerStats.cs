@@ -37,7 +37,7 @@ public class PlayerStats : MonoBehaviour
     private int _healthUpgradesCount = 0;
     private int _hpRegenUpgradesCount = 0;
     private int _missUpgradesCount = 0;
-    
+    private int _luckUpgradesCount = 0;
 
     
     public float MaxHealth
@@ -56,6 +56,9 @@ public class PlayerStats : MonoBehaviour
     public float HpRegenPercent => (_config.baseHPRegen + PlayerData.HPRegenBonusPerLevel * _hpRegenUpgradesCount);
     public float TotalHpPerSecond => Mathf.Clamp(MaxHealth * HpRegenPercent, 0, MaxHealth * 0.50f);
     public float TotalDodgeChance => Mathf.Clamp(_config.baseMiss + _missUpgradesCount * PlayerData.MissBonusPerLevel, 0f, 80f);
+    public float GoldMultiplier => _config.baseLuck + PlayerData.LuckGoldBonusPerLevel * _luckUpgradesCount;
+    public float LootChance => _config.baseLuck * (PlayerData.LuckLootBonusPerLevel * _luckUpgradesCount);
+    public float Luck => _config.baseLuck + _luckUpgradesCount;
 
 
     private void Awake()
@@ -140,13 +143,16 @@ public class PlayerStats : MonoBehaviour
     {
         _missUpgradesCount++;
     }
+    public void LuckUpgrade()
+    {
+        _luckUpgradesCount++;
+    }
     
 
     public void TakeDamage(int damageAmount)
     {
         if (isInvincible) return;
         if (isDead) return;
-
         float roll = Random.Range(0f, 100f);
         Color color;
         if (roll <= TotalDodgeChance)
@@ -157,6 +163,10 @@ public class PlayerStats : MonoBehaviour
         }
         color = new Color(1f, 1f, 1f);
         _currentHealth -= damageAmount;
+        if (GameStatsManager.Instance != null)
+        {
+            GameStatsManager.Instance.AddReceivedDamage(damageAmount);
+        }
         _currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
         _nextRegenTime = Time.time + invincibilityDuration;
         _animator.SetTrigger("Hurt");

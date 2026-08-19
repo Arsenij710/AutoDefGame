@@ -16,7 +16,7 @@ MonoBehaviour:
   SpriteSize: {x: 4, y: 4}
   Animator: {fileID: 9100000, guid: b6552c3aebf2795439614ec6931df748, type: 2}
   Speed: 3
-  StoppingDistance: 1.4
+  StoppingDistance: 1.5
   MaxHealth: 200
   ScoreReward: 50
   BaseExp: 50
@@ -28,3 +28,6 @@ MonoBehaviour:
     m_Bits: 8
   colliderSize: {x: 1.5, y: 1.5}
   lootTable: {fileID: 11400000, guid: ac7558ee3a79b6a45a0b399bd378a0f0, type: 2}
+  Coins:
+  - coinType: {fileID: 11400000, guid: 08fbfe3f5bbecce48b15acfeee8c28fc, type: 2}
+    count: 3

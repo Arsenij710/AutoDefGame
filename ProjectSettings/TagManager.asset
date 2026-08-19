@@ -50,8 +50,20 @@ TagManager:
   - name: Drop
     uniqueID: 157820399
     locked: 0
+  - name: Enemy
+    uniqueID: 1232051155
+    locked: 0
+  - name: Player
+    uniqueID: 3289027369
+    locked: 0
   - name: UI
     uniqueID: 951563685
+    locked: 0
+  - name: UI_Buttons
+    uniqueID: 4206581917
+    locked: 0
+  - name: UI_Upper
+    uniqueID: 3353171235
     locked: 0
   m_RenderingLayers:
   - Default

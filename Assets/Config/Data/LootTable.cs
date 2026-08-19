@@ -14,10 +14,11 @@ public class LootTable : ScriptableObject
     [Range(0, 100)] public float generalDropChance = 5f; 
     public List<LootDrop> possibleDrops;
 
-    public GameObject GetRandomDrop()
+    public GameObject GetRandomDrop(float luckChance)
     {
         float randomRoll = Random.Range(0f, 100f);
-        if (randomRoll > generalDropChance) return null;
+        float finalChance = generalDropChance + luckChance;
+        if (randomRoll > finalChance) return null;
 
         float totalWeight = 0;
         foreach (var drop in possibleDrops) totalWeight += drop.weight;
