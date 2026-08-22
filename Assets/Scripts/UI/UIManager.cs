@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private TMP_Text _nameText;
     [SerializeField] private GameObject _warningPanel;
+    [SerializeField] private GameObject _inventoryPanel;
 
     [Header("GamoOver text")]
     [SerializeField] private TextMeshProUGUI _finalScoreText;  
@@ -22,7 +23,7 @@ public class UIManager : MonoBehaviour
 
     PlayerStats stats;
     PlayerAttack attack;
-    private bool _isPaused = false;
+    public bool _isPaused = false;
     private string _name;
     private bool _isExitingToMenu = false;
 
@@ -50,6 +51,10 @@ public class UIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (_inventoryPanel != null && _inventoryPanel.activeSelf)
+            {
+                return;
+            }
             if (_isPaused)
             {
                 ResumeGame();

@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c392513fc7836dc4089dcddd04230612, type: 3}
+  m_Name: CommonEnemyRarity
+  m_EditorClassIdentifier: Assembly-CSharp::RarityConfig
+  _waveRules:
+  - MinWave: 0
+    Chances:
+    - Rarity: 0
+      Chance: 0.7
+    - Rarity: 1
+      Chance: 0.3
+  - MinWave: 7
+    Chances:
+    - Rarity: 0
+      Chance: 0.5
+    - Rarity: 1
+      Chance: 0.4
+    - Rarity: 2
+      Chance: 0.1
+  - MinWave: 15
+    Chances:
+    - Rarity: 0
+      Chance: 0.35
+    - Rarity: 1
+      Chance: 0.35
+    - Rarity: 2
+      Chance: 0.2
+    - Rarity: 3
+      Chance: 0.1
+  - MinWave: 26
+    Chances:
+    - Rarity: 0
+      Chance: 0.05
+    - Rarity: 1
+      Chance: 0.35
+    - Rarity: 2
+      Chance: 0.35
+    - Rarity: 3
+      Chance: 0.2
+    - Rarity: 4
+      Chance: 0.05
+  - MinWave: 35
+    Chances:
+    - Rarity: 1
+      Chance: 0.1
+    - Rarity: 2
+      Chance: 0.2
+    - Rarity: 3
+      Chance: 0.4
+    - Rarity: 4
+      Chance: 0.25
+    - Rarity: 5
+      Chance: 0.05
+  - MinWave: 43
+    Chances:
+    - Rarity: 2
+      Chance: 0.1
+    - Rarity: 3
+      Chance: 0.2
+    - Rarity: 4
+      Chance: 0.5
+    - Rarity: 5
+      Chance: 0.2
+  - MinWave: 52
+    Chances:
+    - Rarity: 3
+      Chance: 0.2
+    - Rarity: 4
+      Chance: 0.5
+    - Rarity: 5
+      Chance: 0.3
+  - MinWave: 65
+    Chances:
+    - Rarity: 4
+      Chance: 0.3
+    - Rarity: 5
+      Chance: 0.7

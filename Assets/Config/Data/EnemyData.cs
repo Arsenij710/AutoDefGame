@@ -31,6 +31,7 @@ public class EnemyData : ScriptableObject
 
     [Header("Loot Settings")]
     public LootTable lootTable;
+    public RarityConfig rarityConfig;
 
     [Serializable]
     public struct Coin

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 426ef7e1ae395634b8188c7773e68bd1, type: 3}
+  m_Name: BerserkSet
+  m_EditorClassIdentifier: Assembly-CSharp::BerserkSet
+  setName: "\u0411\u0435\u0440\u0441\u0435\u0440\u043A \u0441\u0435\u0442"
+  setArtifacts:
+  - artifactName: B_H
+    icon: {fileID: -8194631110891105226, guid: fe40a86a3bab381428ca81ec29298e6c, type: 3}
+    slotType: 0
+  - artifactName: B_A
+    icon: {fileID: 8134786522495458593, guid: 22b7f1be91456c44d884d6b6a7e15b49, type: 3}
+    slotType: 1
+  - artifactName: B_Ga
+    icon: {fileID: 4478310432627173246, guid: 6a6ee104a896b1d49895704c117cc801, type: 3}
+    slotType: 2
+  - artifactName: B_Gr
+    icon: {fileID: -8543338780275290473, guid: 4a29f32a2988510498da4f3ec17b8a17, type: 3}
+    slotType: 3
+  - artifactName: B_W
+    icon: {fileID: 4475123825542513644, guid: c4b7ed3eaf5466247a3bcd8068579bb4, type: 3}
+    slotType: 4
+  - artifactName: B_R
+    icon: {fileID: 5303463806824621554, guid: 447e5b3e91d968140992768ae1e84f5e, type: 3}
+    slotType: 5
+  bonus2PiecesDescription: "2 : \u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
+    \u0441\u0438\u043B\u0443 \u0430\u0442\u0430\u043A\u0438 \u043D\u0430 15%\n"
+  bonus4PiecesDescription: "4 : \u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
+    \u0441\u043A\u043E\u0440\u043E\u0441\u0442\u044C \u0430\u0442\u0430\u043A\u0438
+    \u043D\u0430 25"
+  bonus6PiecesDescription: "6 : 50% \u0430\u0442\u0430\u043A\u0438 \u043F\u043E\u0441\u043B\u0435
+    \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0443\u0440\u043E\u043D\u0430
+    \u043D\u0430 8 \u0441\u0435\u043A\u0443\u043D\u0434"
+  _damageBonus: 15
+  _attackSpeedBonus: 0.25

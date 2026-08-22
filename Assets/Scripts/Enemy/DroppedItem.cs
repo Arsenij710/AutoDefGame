@@ -27,10 +27,20 @@ public class DroppedItem : MonoBehaviour
     [SerializeField] private float healPercent = 15f;
 
     [Header("Artifact Settings")]
-    [SerializeField] private int value = 10;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
+    private RuntimeArtifact _runtimeArtifact;
     private void Awake()
     {
         _baseScale = transform.localScale;
+    }
+    public void SetupArtifact(RuntimeArtifact artifact)
+    {
+        _runtimeArtifact = artifact;
+
+        if (_spriteRenderer != null && artifact.data.icon != null)
+        {
+            _spriteRenderer.sprite = artifact.data.icon;
+        }
     }
     public void Drop(Vector3 enemyPosition)
     {
@@ -95,12 +105,14 @@ public class DroppedItem : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            ApplyLootToPlayer(collision.gameObject);
-            StopAllCoroutines();
-            LootSpawner.Instance.ReturnLootToPool(myPrefab, gameObject);
+            if (ApplyLootToPlayer(collision.gameObject))
+            {
+                StopAllCoroutines();
+                LootSpawner.Instance.ReturnLootToPool(myPrefab, gameObject);
+            }
         }
     }
-    private void ApplyLootToPlayer(GameObject player)
+    private bool ApplyLootToPlayer(GameObject player)
     {
         PlayerStats playerStats = player.GetComponent<PlayerStats>();
         switch (lootType)
@@ -108,13 +120,16 @@ public class DroppedItem : MonoBehaviour
             case LootType.Health:
                 int finalHealAmount = Mathf.RoundToInt((playerStats.MaxHealth * healPercent) / 100f);
                 playerStats.Heal(finalHealAmount);
-                break;
+                return true;
 
             case LootType.Artifact:
-                // player.GetComponent<PlayerInventory>().AddArtifact(value);
-                Debug.Log($"Подобран артефакт с ID {value}");
-                break;
+                if (_runtimeArtifact != null && ArtifactInventory.Instance != null)
+                {
+                    return ArtifactInventory.Instance.AddArtifact(_runtimeArtifact);
+                }
+                return false;
         }
+        return true;
     }
     private void OnDisable()
     {

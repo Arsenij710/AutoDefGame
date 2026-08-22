@@ -4,7 +4,9 @@ using UnityEngine;
 [System.Serializable]
 public class LootDrop
 {
-    public GameObject itemPrefab; 
+    public string name;
+    public GameObject itemPrefab;
+    public ArtifactSet artifactSet;
     [Range(0, 100)] public float weight; 
 }
 
@@ -14,7 +16,7 @@ public class LootTable : ScriptableObject
     [Range(0, 100)] public float generalDropChance = 5f; 
     public List<LootDrop> possibleDrops;
 
-    public GameObject GetRandomDrop(float luckChance)
+    public LootDrop GetRandomDrop(float luckChance)
     {
         float randomRoll = Random.Range(0f, 100f);
         float finalChance = generalDropChance + luckChance;
@@ -29,7 +31,7 @@ public class LootTable : ScriptableObject
         foreach (var drop in possibleDrops)
         {
             s += drop.weight;
-            if (roll <= s) return drop.itemPrefab;
+            if (roll <= s) return drop;
         }
 
         return null;

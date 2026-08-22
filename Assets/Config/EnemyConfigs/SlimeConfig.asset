@@ -28,6 +28,7 @@ MonoBehaviour:
     m_Bits: 8
   colliderSize: {x: 1.3, y: 0.8}
   lootTable: {fileID: 11400000, guid: 401477a4609598a478e0425e453f5c99, type: 2}
+  rarityConfig: {fileID: 11400000, guid: 600ac29bf1c764f4ba733d7f5bff07fe, type: 2}
   Coins:
   - coinType: {fileID: 11400000, guid: d5ce986e30486f649b9809ce3d45a02a, type: 2}
     count: 2

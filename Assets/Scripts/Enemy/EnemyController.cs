@@ -80,7 +80,7 @@ public class EnemyController : MonoBehaviour
         }
         if (_enemyLoot != null)
         {
-            _enemyLoot.InitializeLoot(_config.lootTable);
+            _enemyLoot.InitializeLoot(_config.lootTable, _config.rarityConfig);
         }
 
         float healthMultiplier = Mathf.Pow(1.10f, waveNumber - 1);

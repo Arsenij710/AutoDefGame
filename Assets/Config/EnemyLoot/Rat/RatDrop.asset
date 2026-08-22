@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a242f9a1a4db3a4b8c5865fd5bc0b65, type: 3}
+  m_Name: RatDrop
+  m_EditorClassIdentifier: Assembly-CSharp::LootTable
+  generalDropChance: 100
+  possibleDrops:
+  - name: "\u0411\u0435\u0440\u0441\u0435\u0440\u043A \u0441\u0435\u0442"
+    itemPrefab: {fileID: 2174052735725165656, guid: 577784f11d3b1fc4cae8426e9e34584c, type: 3}
+    artifactSet: {fileID: 11400000, guid: a1cfe2853e1af6344a91380db0b28472, type: 2}
+    weight: 40
+  - name: "\u041C\u0430\u043B\u0435\u043D\u044C\u043A\u0430\u044F \u0430\u043F\u0442\u0435\u0447\u043A\u0430"
+    itemPrefab: {fileID: 964253374881723672, guid: 9f73af2c6c72d8543a09985e0a5ef37e, type: 3}
+    artifactSet: {fileID: 0}
+    weight: 40
+  - name: "\u0421\u0440\u0435\u0434\u043D\u044F\u044F \u0430\u043F\u0442\u0435\u0447\u043A\u0430"
+    itemPrefab: {fileID: 5845552567691057937, guid: 14ab1fd75d73d5c45bff9cbd3dc4fbce, type: 3}
+    artifactSet: {fileID: 0}
+    weight: 30

@@ -39,5 +39,4 @@ public class InventoryManager : MonoBehaviour
         _talentsContent.SetActive(false);
         _statsContent.SetActive(true);
     }
-
 }
