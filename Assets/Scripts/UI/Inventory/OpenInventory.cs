@@ -6,6 +6,7 @@ public class OpenInventory : MonoBehaviour
     [SerializeField] private GameObject _inventoryWindow;
     private bool _isPaused = false;
 
+
     void Update()
     {
         if (UIManager.IsGameOver) return;

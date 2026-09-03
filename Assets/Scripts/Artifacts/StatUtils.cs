@@ -23,6 +23,8 @@ public static class StatUtils
             StatType.CritDamage => "Крит. урон",
             StatType.MissChance => "Шанс уворота",
             StatType.HpRegen => "Регенерация HP",
+            StatType.DoubleAttack => "Повторная атака",
+            StatType.Vampirism => "Вампиризм",
             _ => ""
         };
     }
@@ -56,5 +58,20 @@ public static class StatUtils
 
         return $"{formattedValue} {percent}";
     }
+    public static int GenerateSubstatsCount(ArtifactRarity rarity)
+    {
+        int roll = Random.Range(0, 100);
+        bool isHighRoll = roll < 20;
 
+        return rarity switch
+        {
+            ArtifactRarity.Common => isHighRoll ? 1 : 0,
+            ArtifactRarity.Uncommon => isHighRoll ? 2 : 1,
+            ArtifactRarity.Rare => isHighRoll ? 3 : 2,
+            ArtifactRarity.Epic => isHighRoll ? 4 : 3,
+            ArtifactRarity.Legendary => isHighRoll ? 5 : 4,
+            ArtifactRarity.Mythical => 5, 
+            _ => 0
+        };
+    }
 }

@@ -4,14 +4,19 @@ using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour
 {
+    [Header("UI Elements")]
+    [SerializeField] private Sprite _defaultFrame;
+    [SerializeField] private Image _iconImage;
+    [SerializeField] private Image _textBackImage;
+    [SerializeField] private TextMeshProUGUI _levelText;
+    [SerializeField] private Image _rarityFrame;
+
+    [Header("Rarity Sprites")]
+    [SerializeField] private Sprite[] _raritySprites;
+
     [Header("Equip Slot Options")]
     public bool IsEquipSlot;
-    [SerializeField] private ArtifactSlotType _slotType;
 
-    [SerializeField] private Image _iconImage;
-    [SerializeField] private Image _rarityFrame;
-    [SerializeField] private Image _backText;
-    [SerializeField] private TextMeshProUGUI _levelText;
     public RuntimeArtifact CurrentArtifact;
     public void Setup(RuntimeArtifact artifact)
     {
@@ -29,18 +34,20 @@ public class InventorySlot : MonoBehaviour
         {
             _iconImage.enabled = true;
         }
-        if (_backText != null)
+
+        if (_textBackImage != null)
         {
-            _backText.enabled = true;
+            _textBackImage.enabled = true;
         }
 
         if (_levelText != null)
-            _levelText.text = artifact.level >= 0 ? $"{artifact.level} lvl" : "";
+            _levelText.text = artifact.level >= 0 ? $"+{artifact.level}" : "";
 
-        if (_rarityFrame != null)
-        { 
-            _rarityFrame.color = StatUtils.GetRarityColor(artifact.rarity);
-            _rarityFrame.enabled = true;
+        int rarityIndex = (int)artifact.rarity;
+
+        if (_raritySprites != null && rarityIndex < _raritySprites.Length)
+        {
+            _rarityFrame.sprite = _raritySprites[rarityIndex];
         }
 
     }
@@ -49,8 +56,8 @@ public class InventorySlot : MonoBehaviour
         if (this == null || _iconImage == null) return;
         CurrentArtifact = null;
         _iconImage.enabled = false;
-        _backText.enabled = false;
-        _rarityFrame.enabled = false;
+        _textBackImage.enabled = false;
+        _rarityFrame.sprite = _defaultFrame;
         if (_levelText != null) _levelText.text = "";
     }
     

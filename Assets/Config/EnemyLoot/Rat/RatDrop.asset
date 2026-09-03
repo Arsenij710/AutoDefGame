@@ -18,6 +18,10 @@ MonoBehaviour:
     itemPrefab: {fileID: 2174052735725165656, guid: 577784f11d3b1fc4cae8426e9e34584c, type: 3}
     artifactSet: {fileID: 11400000, guid: a1cfe2853e1af6344a91380db0b28472, type: 2}
     weight: 40
+  - name: "\u0421\u0435\u0442 \u0421\u0442\u0440\u0430\u0436\u0430"
+    itemPrefab: {fileID: 2174052735725165656, guid: 577784f11d3b1fc4cae8426e9e34584c, type: 3}
+    artifactSet: {fileID: 11400000, guid: 731e8ce2fc930b641abf496e2df144c3, type: 2}
+    weight: 40
   - name: "\u041C\u0430\u043B\u0435\u043D\u044C\u043A\u0430\u044F \u0430\u043F\u0442\u0435\u0447\u043A\u0430"
     itemPrefab: {fileID: 964253374881723672, guid: 9f73af2c6c72d8543a09985e0a5ef37e, type: 3}
     artifactSet: {fileID: 0}

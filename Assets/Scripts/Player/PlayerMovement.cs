@@ -17,12 +17,10 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _dashDirection;
     private bool _isDashing = false;
     private bool _canDash = true;
-    private float _speed;
     private bool _isFacingRight = true;
 
     void Start()
     {
-        _speed = _config.baseMoveSpeed;
         _stats = GetComponent<PlayerStats>();
         _rb = GetComponent<Rigidbody2D>();
         _anim = GetComponentInChildren<Animator>();
@@ -89,6 +87,6 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         if (_isDashing) return;
-        _rb.linearVelocity = _direction * _speed;
+        _rb.linearVelocity = _direction * _stats.Speed;
     }
 }

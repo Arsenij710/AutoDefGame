@@ -30,7 +30,7 @@ public class DropingTextManager : MonoBehaviour
            maxSize: _maxPoolSize
        );
     }
-    public void ShowDropingText(Vector3 position, int amount, Color color, bool isCrit=false, bool isMiss=false)
+    public void ShowDropingText(Vector3 position, float amount, Color color, bool isCrit=false, bool isMiss=false)
     {
         int isTextVisible = PlayerPrefs.GetInt("ShowDropingNumbers", 1);
         if (_damagePrefab != null && isTextVisible == 1)

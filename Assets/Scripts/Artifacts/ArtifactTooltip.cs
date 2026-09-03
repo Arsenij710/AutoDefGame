@@ -8,7 +8,8 @@ using UnityEngine.UI;
 public class ArtifactTooltip : MonoBehaviour
 {
     [Header("Button")]
-    [SerializeField] private Button _actionButton;
+    [SerializeField] private Button _actionButton; 
+    [SerializeField] private Button _deleteButton;
     [SerializeField] private TMP_Text _actionButtonText;
     public static ArtifactTooltip Instance { get; private set; }
 
@@ -50,6 +51,7 @@ public class ArtifactTooltip : MonoBehaviour
         HideTooltip();
         _actionButton.onClick.RemoveAllListeners();
         _actionButton.onClick.AddListener(OnEquipButtonClick);
+        _deleteButton.onClick.AddListener(OnDeleteClicked);
     }
 
     private void Update()
@@ -77,11 +79,31 @@ public class ArtifactTooltip : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            if (!RectTransformUtility.RectangleContainsScreenPoint(_panel, Input.mousePosition, _mainCanvas.worldCamera))
+            if (!IsPointerOverTooltip())
             {
                 HideTooltip();
             }
         }
+    }
+    private bool IsPointerOverTooltip()
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.transform.IsChildOf(transform))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
     public void ShowPreview(RuntimeArtifact artifact, RectTransform slotRect, bool isEquipped)
     {
@@ -94,7 +116,10 @@ public class ArtifactTooltip : MonoBehaviour
         _panel.gameObject.SetActive(true);
 
         UpdateUI(_currentArtifact);
+        //Canvas.ForceUpdateCanvases();
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(_panel);
         UpdatePosition(slotRect);
+        //ClampToScreen();
     }
     public void PinTooltip(RuntimeArtifact artifact, RectTransform slotRect,bool isEquipped)
     {
@@ -121,19 +146,45 @@ public class ArtifactTooltip : MonoBehaviour
         slotRect.GetWorldCorners(slotCorners);
 
         Camera uiCamera = _mainCanvas.worldCamera;
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, slotCorners[2]);
-        RectTransform canvasRect = _mainCanvas.transform as RectTransform;
 
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, uiCamera, out Vector2 localPoint))
+        Vector2 slotTopRight = RectTransformUtility.WorldToScreenPoint(uiCamera, slotCorners[2]);
+        Vector2 slotTopLeft = RectTransformUtility.WorldToScreenPoint(uiCamera, slotCorners[1]);
+
+        float slotCenterY = RectTransformUtility.WorldToScreenPoint(uiCamera, slotRect.position).y;
+
+        float panelWidth = _panel.rect.width * _mainCanvas.scaleFactor;
+
+        Vector2 targetRightCenter = new Vector2(slotTopRight.x, slotCenterY);
+        Vector2 targetLeftCenter = new Vector2(slotTopLeft.x, slotCenterY);
+
+        if (slotTopRight.x + panelWidth + _padding.x > Screen.width)
         {
-            _panel.anchoredPosition = localPoint + _offset;
+            _panel.pivot = new Vector2(1f, 0.5f);
+            Vector2 localPoint = GetLocalPoint(targetLeftCenter);
+            _panel.anchoredPosition = localPoint + new Vector2(-_offset.x, _offset.y);
+        }
+        else
+        {
+            _panel.pivot = new Vector2(0f, 0.5f);
+            Vector2 localPoint = GetLocalPoint(targetRightCenter);
+            _panel.anchoredPosition = localPoint + new Vector2(_offset.x, _offset.y);
         }
 
         Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_panel);
+
         ClampToScreen();
+    }
+    private Vector2 GetLocalPoint(Vector2 screenPoint)
+    {
+        RectTransform canvasRect = _mainCanvas.transform as RectTransform;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, _mainCanvas.worldCamera, out Vector2 localPoint);
+        return localPoint;
     }
     private void ClampToScreen()
     {
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_panel);
+
         Vector3[] corners = new Vector3[4];
         _panel.GetWorldCorners(corners);
 
@@ -152,8 +203,8 @@ public class ArtifactTooltip : MonoBehaviour
         if (bottomLeft.y < _padding.y)
             shift.y += (_padding.y - bottomLeft.y);
 
-        if (topRight.y > Screen.height - _padding.y)
-            shift.y -= (topRight.y - (Screen.height - _padding.y));
+        if (topRight.y + shift.y > Screen.height - _padding.y)
+            shift.y = (Screen.height - _padding.y) - topRight.y;
 
         _panel.anchoredPosition += shift / _mainCanvas.scaleFactor;
     }
@@ -173,6 +224,13 @@ public class ArtifactTooltip : MonoBehaviour
 
         HideTooltip();
     }
+    private void OnDeleteClicked()
+    {
+        if (_currentArtifact == null) return;
+
+        ArtifactInventory.Instance.RemoveArtifact(_currentArtifact);
+        HideTooltip();
+    }
     public void UpdateUI(RuntimeArtifact artifact)
     {
         if (_actionButtonText != null)
@@ -182,8 +240,6 @@ public class ArtifactTooltip : MonoBehaviour
 
         _artifactNameText.text = artifact.data.artifactName;
         _rarity.color = StatUtils.GetRarityColor(artifact.rarity);
-        Debug.Log(artifact.rarity);
-        Debug.Log(_rarity.color.r);
         _elementText.text = StatUtils.GetElementName(artifact.data.slotType);
         _mainStatsText.text = $"{StatUtils.GetStatName(artifact.mainStat.type)}";
         _mainStatsValue.text = $"{StatUtils.FormatStatForUI(artifact.mainStat)}";
@@ -204,6 +260,13 @@ public class ArtifactTooltip : MonoBehaviour
         _setActiveImage2.sprite = currentCount >= 2 ? _ActiveSet : _NotActiveSet;
         _setActiveImage4.sprite = currentCount >= 4 ? _ActiveSet : _NotActiveSet;
         _setActiveImage6.sprite = currentCount >= 6 ? _ActiveSet : _NotActiveSet;
+
+        Color activeColor = new Color32(75, 255, 100, 255);
+        Color inactiveColor = new Color32(185, 185, 185, 255);
+
+        _setBonusText2.color = currentCount >= 2 ? activeColor : inactiveColor;
+        _setBonusText4.color = currentCount >= 4 ? activeColor : inactiveColor;
+        _setBonusText6.color = currentCount >= 6 ? activeColor : inactiveColor;
 
         _setBonusText2.text = artifact.artifactSet.bonus2PiecesDescription;
         _setBonusText4.text = artifact.artifactSet.bonus4PiecesDescription;

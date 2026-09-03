@@ -12,13 +12,13 @@ public class GameStatsManager : MonoBehaviour
 
     private float _elapsedTime;
     private bool _isTimerRunning = true;
-    private int _totalDamageDealt = 0;
-    private int _maxSingleHitDamage = 0;
-    private int _totalDamageReceived = 0;
+    private float _totalDamageDealt = 0;
+    private float _maxSingleHitDamage = 0;
+    private float _totalDamageReceived = 0;
     private struct DamageEvent
     {
         public int timeStamp;
-        public int damage;
+        public float damage;
     }
     private Queue<DamageEvent> _damageHistory = new Queue<DamageEvent>();
     private int _dpsWindowSeconds = 3;
@@ -44,7 +44,7 @@ public class GameStatsManager : MonoBehaviour
             _elapsedTime += Time.deltaTime;
         }
     }
-    public void AddDamage(int damageAmount)
+    public void AddDamage(float damageAmount)
     {
         if (damageAmount > 0)
         {
@@ -70,19 +70,19 @@ public class GameStatsManager : MonoBehaviour
             _damageHistory.Dequeue();
         }
     }
-    private int CalculateCurrentDps()
+    private float CalculateCurrentDps()
     {
         if (_damageHistory.Count == 0) return 0;
 
-        int sum = 0;
+        float sum = 0;
         foreach (var damageEvent in _damageHistory)
         {
             sum += damageEvent.damage;
         }
 
-        return Mathf.RoundToInt((float)sum / _dpsWindowSeconds);
+        return sum / _dpsWindowSeconds;
     }
-    public void AddReceivedDamage(int damageAmount)
+    public void AddReceivedDamage(float damageAmount)
     {
         if (damageAmount > 0)
         {
@@ -93,8 +93,9 @@ public class GameStatsManager : MonoBehaviour
     {
         string timeText = GetFormattedTime();
         string enemyKilled = ScoreManager.Instance.GetEnemyKilledCount().ToString("N0").Replace(",", " ");
+        string artCount = ArtifactInventory.Instance.TotalArtifactsCollected.ToString("N0").Replace(",", " ");
         string goldEarned = GoldManager.Instance.GoldEarnedThisRun.ToString("N0").Replace(",", " ");
-        _gameText.text = $"{timeText}\n{enemyKilled}\nсобрано артов\n{goldEarned}";
+        _gameText.text = $"{timeText}\n{enemyKilled}\n{artCount}\n{goldEarned}";
 
         string damageDealt = _totalDamageDealt.ToString("N0").Replace(",", " ");
         string maxDamageDealt = _maxSingleHitDamage.ToString("N0").Replace(",", " ");

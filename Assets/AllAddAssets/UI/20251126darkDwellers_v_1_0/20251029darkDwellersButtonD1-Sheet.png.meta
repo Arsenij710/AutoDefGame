@@ -112,13 +112,13 @@ TextureImporter:
       name: 20251029darkDwellersButtonD1-Sheet_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 95
-        height: 24
+        x: 1
+        y: 1
+        width: 93
+        height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 18, y: 4, z: 18, w: 4}
       customData: 
       outline: []
       physicsShape: []
@@ -134,13 +134,13 @@ TextureImporter:
       name: 20251029darkDwellersButtonD1-Sheet_1
       rect:
         serializedVersion: 2
-        x: 95
+        x: 96
         y: 0
-        width: 98
+        width: 96
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 18, y: 5, z: 19, w: 4}
       customData: 
       outline: []
       physicsShape: []
@@ -156,13 +156,13 @@ TextureImporter:
       name: 20251029darkDwellersButtonD1-Sheet_2
       rect:
         serializedVersion: 2
-        x: 192
-        y: 0
-        width: 95
-        height: 24
+        x: 193
+        y: 1
+        width: 93
+        height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 18, y: 4, z: 18, w: 4}
       customData: 
       outline: []
       physicsShape: []
@@ -178,13 +178,13 @@ TextureImporter:
       name: 20251029darkDwellersButtonD1-Sheet_3
       rect:
         serializedVersion: 2
-        x: 300
+        x: 301
         y: 4
-        width: 71
+        width: 69
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 6, y: 1, z: 6, w: 1}
       customData: 
       outline: []
       physicsShape: []
@@ -200,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b170f3f34dfd7e3438387ba9426c5e91
     internalID: 0
     vertices: []
     indices: 

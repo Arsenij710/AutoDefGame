@@ -17,20 +17,23 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _killedEnemiesText;
     [SerializeField] private TextMeshProUGUI _goldEarnedText;
 
+    [Header("Tooltip")]
+    [SerializeField] private RectTransform _panel;
+    [SerializeField] private TMP_Text _description;
+    [SerializeField] private Vector2 _offset = new Vector2(15f, 15f);
+
     public static UIManager Instance { get; private set; }
     public static bool IsGameOver { get; private set; }
 
 
-    PlayerStats stats;
-    PlayerAttack attack;
     public bool _isPaused = false;
     private string _name;
     private bool _isExitingToMenu = false;
+    [SerializeField] private Canvas _parentCanvas;
 
     private void Awake()
     {
-        stats = FindFirstObjectByType<PlayerStats>();
-        attack = stats.GetComponent<PlayerAttack>();
+        IsGameOver = false;
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -43,6 +46,7 @@ public class UIManager : MonoBehaviour
             _name = PlayerPrefs.GetString("PlayerName", "Игрок");
             _nameText.text = _name;
         }
+        _panel.gameObject.SetActive(false);
     }
     private void Update()
     {
@@ -194,5 +198,32 @@ public class UIManager : MonoBehaviour
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+    public void ShowStatTooltip(string text, RectTransform target)
+    {
+        if (_description != null)
+        {
+            _description.text = text;
+        }
+
+        _panel.gameObject.SetActive(true);
+
+        float targetX = target.anchoredPosition.x;
+
+        if (targetX < 0)
+        {
+            _panel.pivot = new Vector2(0f, 0.5f);
+            _panel.anchoredPosition = target.anchoredPosition + new Vector2(_offset.x, _offset.y);
+        }
+        else
+        {
+            _panel.pivot = new Vector2(1f, 0.5f);
+            _panel.anchoredPosition = target.anchoredPosition + new Vector2(-_offset.x, _offset.y);
+        }
+    }
+
+    public void HideStatTooltip()
+    {
+        _panel.gameObject.SetActive(false);
     }
 }

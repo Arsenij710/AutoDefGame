@@ -1,9 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class InventoryUI : MonoBehaviour
 {
     public static InventoryUI Instance;
+    [System.Serializable]
+    public class SetBonusPanel
+    {
+        public Transform container;
+        public TMP_Text emptySetsText;
+    }
+
+    public List<SetBonusPanel> _panels = new List<SetBonusPanel>();
+    [SerializeField] private SetBonusRow _rowPrefab;
 
     [Header("Grid Setup")]
     [SerializeField] private Transform _gridContainer;
@@ -35,8 +47,50 @@ public class InventoryUI : MonoBehaviour
             _uiSlots[i] = Instantiate(_slotPrefab, _gridContainer);
             _uiSlots[i].ClearSlot();
         }
+        UpdateInventoryUI();
     }
+    public void RefreshPanel(Dictionary<ArtifactSet, int> setCounts)
+    {
+        foreach (var panel in _panels)
+        {
+            if (panel.container != null)
+            {
+                RefreshSinglePanel(panel, setCounts);
+            }
+        }
+        Canvas.ForceUpdateCanvases();
+    }
+    private void RefreshSinglePanel(SetBonusPanel panel, Dictionary<ArtifactSet, int> setCounts)
+    {
+        for (int i = panel.container.childCount - 1; i >= 0; i--)
+        {
+            Destroy(panel.container.GetChild(i).gameObject);
+        }
 
+        if (setCounts == null) return;
+
+        var validSets = setCounts
+            .Where(kvp => kvp.Key != null)
+            .GroupBy(kvp => kvp.Key.setName)
+            .Select(g => new { Set = g.First().Key, Count = g.Sum(kvp => kvp.Value) })
+            .Where(x => x.Count > 1)
+            .ToList();
+
+        bool hasAnySets = validSets.Count > 0;
+
+        if (panel.emptySetsText != null)
+        {
+            panel.emptySetsText.gameObject.SetActive(!hasAnySets);
+        }
+
+        if (!hasAnySets) return;
+
+        foreach (var item in validSets)
+        {
+            SetBonusRow row = Instantiate(_rowPrefab, panel.container);
+            row.Setup(item.Set, item.Count);
+        }
+    }
     public void UpdateInventoryUI()
     {
         var currentItems = ArtifactInventory.Instance.items;

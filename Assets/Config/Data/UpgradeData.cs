@@ -8,31 +8,35 @@ public class UpgradeData : ScriptableObject
 
     [HideInInspector]
     public int currentCount = 0;
-    public void ApplyUpgrade(PlayerStats stats, PlayerAttack attack)
+    public void ApplyUpgrade(PlayerStats stats)
     {
         currentCount++;
       
-        if (stats != null && attack != null)
+        if (stats != null)
         {
             if (upgradeName == "Атака")
             {
-                attack.UpgradeDamage();
+                stats.UpgradeDamage();
             }
             else if (upgradeName == "Хп")
             {
                 stats.UpgradeMaxHealth();
             }
+            else if (upgradeName == "Защита")
+            {
+                stats.UpgradeDefence();
+            }
             else if (upgradeName == "Скорость атаки")
             {
-                attack.UpgradeAttackSpeed();
+                stats.UpgradeAttackSpeed();
             }
             else if (upgradeName == "Восстановление хп")
             {
-                stats.Heal((int)(stats.MaxHealth * 0.3f));
+                stats.Heal(stats.MaxHealth * 0.3f);
             }
             else if (upgradeName == "Радиус")
             {
-                attack.UpgradeRadius();
+                stats.UpgradeRadius();
             }
             else if (upgradeName == "Регенерация ХП")
             {
@@ -40,11 +44,11 @@ public class UpgradeData : ScriptableObject
             }
             else if (upgradeName == "Крит Урон")
             {
-                attack.CritDamageUpgrade();
+                stats.CritDamageUpgrade();
             }
             else if (upgradeName == "Крит Шанс")
             {
-                attack.CritChanceUpgrade();
+                stats.CritChanceUpgrade();
             }
             else if (upgradeName == "Уклонение")
             {
@@ -52,11 +56,15 @@ public class UpgradeData : ScriptableObject
             }
             else if (upgradeName == "Повторная атака")
             {
-                attack.ReAttackUpgrade();
+                stats.ReAttackUpgrade();
             }
             else if (upgradeName == "Удача")
             {
                 stats.LuckUpgrade();
+            }
+            else if (upgradeName == "Вампиризм")
+            {
+                stats.VampirismUpgrade();
             }
 
         }

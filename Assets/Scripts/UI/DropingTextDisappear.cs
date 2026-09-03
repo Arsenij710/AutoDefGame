@@ -22,7 +22,7 @@ public class DropingTextDisappear : MonoBehaviour
         _myPool = pool;
         if (isCrit)
         {
-            _textMesh.text = $"Крит!!\n{amount.ToString()}";
+            _textMesh.text = $"Крит!!\n{amount.ToString("0.#")}";
         }
         else if (isMiss)
         {
@@ -31,18 +31,18 @@ public class DropingTextDisappear : MonoBehaviour
         }
         else
         {
-            _textMesh.text = amount.ToString();
+            _textMesh.text = amount.ToString("0.#");
         }
         _textMesh.color = color;
         _textColor.a = 1f;
-        _moveYSpeed = 1.5f;
+        _moveYSpeed = Random.Range(1.5f, 3f);
+        _moveXSpeed = Random.Range(-3.5f, 3.5f);
 
         _disappearTimer = DISAPPEAR_MAX_TIME; 
-        _moveXSpeed = Random.Range(-1f, 1f);
     }
     private void Update()
     {
-        _moveYSpeed -= 6f * Time.deltaTime;
+        _moveYSpeed -= 5f * Time.deltaTime;
         transform.position += new Vector3(_moveXSpeed, _moveYSpeed, 0) * Time.deltaTime;
         _disappearTimer -= Time.deltaTime;
 

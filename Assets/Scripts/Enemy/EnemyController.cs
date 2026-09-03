@@ -185,7 +185,7 @@ public class EnemyController : MonoBehaviour
         _attackLogic.PerformAoEAttack(_rb.position, _config.AttackRadius, (int)_currentAttack, _config.PlayerLayer);
     }
 
-    public void TakeDamage(int damage, bool isCrit)
+    public void TakeDamage(float damage, bool isCrit)
     {
         if (_isDead) return;
         _currentHealth -= damage;

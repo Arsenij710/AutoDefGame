@@ -15,13 +15,15 @@ MonoBehaviour:
   ClassName: Warrior
   baseMaxHealth: 100
   baseDamage: 30
+  baseDefence: 50
+  AttackSpeed: 200
   baseMoveSpeed: 8
-  baseHPRegen: 0.005
-  baseCritChance: 0.05
-  baseCritDamage: 1.5
+  baseHPRegen: 0.3
+  baseCritChance: 5
+  baseCritDamage: 150
   baseMiss: 3
   baseReAttack: 2
   baseLuck: 1
-  attackCooldown: 1.5
+  baseVampirism: 0
   attackRadius: 1.2
   attackOffset: 0.5

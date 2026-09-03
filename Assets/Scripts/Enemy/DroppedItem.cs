@@ -118,7 +118,7 @@ public class DroppedItem : MonoBehaviour
         switch (lootType)
         {
             case LootType.Health:
-                int finalHealAmount = Mathf.RoundToInt((playerStats.MaxHealth * healPercent) / 100f);
+                float finalHealAmount = (playerStats.MaxHealth * healPercent) / 100f;
                 playerStats.Heal(finalHealAmount);
                 return true;
 

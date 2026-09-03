@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Radius
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
   upgradeName: "\u0420\u0430\u0434\u0438\u0443\u0441"
-  maxCount: 8
-  currentCount: 0
+  maxCount: 10000
+  currentCount: 1

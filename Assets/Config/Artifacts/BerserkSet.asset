@@ -15,30 +15,36 @@ MonoBehaviour:
   setName: "\u0411\u0435\u0440\u0441\u0435\u0440\u043A \u0441\u0435\u0442"
   setArtifacts:
   - artifactName: B_H
-    icon: {fileID: -8194631110891105226, guid: fe40a86a3bab381428ca81ec29298e6c, type: 3}
+    icon: {fileID: -526834680933271137, guid: 950534d35c3952e4487f27588f404b8c, type: 3}
     slotType: 0
   - artifactName: B_A
-    icon: {fileID: 8134786522495458593, guid: 22b7f1be91456c44d884d6b6a7e15b49, type: 3}
+    icon: {fileID: 8848466426467231601, guid: 6f384b28271d3724c9fd3cc2e210d004, type: 3}
     slotType: 1
   - artifactName: B_Ga
-    icon: {fileID: 4478310432627173246, guid: 6a6ee104a896b1d49895704c117cc801, type: 3}
+    icon: {fileID: -998303256362533599, guid: 95af62e9d35836643b2124d588a92b1e, type: 3}
     slotType: 2
   - artifactName: B_Gr
-    icon: {fileID: -8543338780275290473, guid: 4a29f32a2988510498da4f3ec17b8a17, type: 3}
+    icon: {fileID: -863297881802563891, guid: d13fd2c1bc4b982428c109f0909088be, type: 3}
     slotType: 3
   - artifactName: B_W
-    icon: {fileID: 4475123825542513644, guid: c4b7ed3eaf5466247a3bcd8068579bb4, type: 3}
+    icon: {fileID: 1009887410671320728, guid: e50666ac5ae7fc446b2879512a0f7d25, type: 3}
     slotType: 4
   - artifactName: B_R
-    icon: {fileID: 5303463806824621554, guid: 447e5b3e91d968140992768ae1e84f5e, type: 3}
+    icon: {fileID: -7920587165966089534, guid: 84f37de0f413a4b43860830f8ecfea0d, type: 3}
     slotType: 5
   bonus2PiecesDescription: "2 : \u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
-    \u0441\u0438\u043B\u0443 \u0430\u0442\u0430\u043A\u0438 \u043D\u0430 15%\n"
+    \u0441\u0438\u043B\u0443 \u0430\u0442\u0430\u043A\u0438 \u043D\u0430 25%\n"
   bonus4PiecesDescription: "4 : \u0423\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
     \u0441\u043A\u043E\u0440\u043E\u0441\u0442\u044C \u0430\u0442\u0430\u043A\u0438
-    \u043D\u0430 25"
-  bonus6PiecesDescription: "6 : 50% \u0430\u0442\u0430\u043A\u0438 \u043F\u043E\u0441\u043B\u0435
-    \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0443\u0440\u043E\u043D\u0430
-    \u043D\u0430 8 \u0441\u0435\u043A\u0443\u043D\u0434"
-  _damageBonus: 15
-  _attackSpeedBonus: 0.25
+    \u043D\u0430 200 \u0438 \u043A\u0440\u0438\u0442. \u0448\u0430\u043D\u0441 \u043D\u0430
+    15%"
+  bonus6PiecesDescription: "6 : \u041F\u0440\u0438 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0438
+    \u0443\u0440\u043E\u043D\u0430 \u0443\u0432\u0435\u043B\u0438\u0447\u0438\u0432\u0430\u0435\u0442
+    \u0441\u0438\u043B\u0443 \u0430\u0442\u0430\u043A\u0438 \u043D\u0430 75% \u0438
+    \u043A\u0440\u0438\u0442. \u0443\u0440\u043E\u043D \u043D\u0430 50% \u043D\u0430
+    8 \u0441\u0435\u043A\u0443\u043D\u0434"
+  _damageBonus: 0.25
+  _attackSpeedBonus: 200
+  _critChanceBonus: 15
+  _6piecesDamageBonus: 0.75
+  _critDamageBonus: 50

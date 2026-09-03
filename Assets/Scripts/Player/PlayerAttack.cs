@@ -8,8 +8,19 @@ public class PlayerAttack : MonoBehaviour
     private float _timeSinceStopped;
 
     [Header("Re Attack")]
-    [SerializeField] private float _timeBetweenStrikes = 0.45f;
+    [SerializeField] private float _timeBetweenStrikes = 0.1f;
     [SerializeField] private int _maxComboStrikes = 5;
+
+    [Header("Slash")]
+    [SerializeField] private Animator _slashAnimator;
+    [SerializeField] private string _animationStateName = "Slash";
+
+    [Header("Slash Scale")]
+    [SerializeField] private float _minScale = 0.9f;
+    [SerializeField] private float _maxScale = 3.5f;
+
+    [Header("Radius Attack")]
+    [SerializeField] private float _maxRadius = 5.0f;
 
     [SerializeField] private float _damageSpreadPercent = 0.1f;
     [SerializeField] private PlayerData _config;
@@ -22,36 +33,6 @@ public class PlayerAttack : MonoBehaviour
 
     private int _currentComboCount = 0;
     private bool isStoppingCompletely;
-    private int _damageUpgradesCount = 0;
-    private int _attackSpeedUpgradesCount = 0;
-    private int _radiusUpgradesCount = 0;
-    private int _critChanceUpgradesCount = 0;
-    private int _critDamageUpgradesCount = 0;
-    private int _reAttackUpgradesCount = 0;
-    public int Damage
-    {
-        get
-        {
-            float currentDamage = _config.baseDamage;
-            float percent = PlayerData.DamageBonusPerLevel;
-            int flatBonus = 5;
-
-            float exponentialDamage = currentDamage * Mathf.Pow(1f + percent, _damageUpgradesCount);
-
-            float totalFlatBonus = _damageUpgradesCount * flatBonus;
-
-            currentDamage = exponentialDamage + totalFlatBonus;
-
-            return Mathf.RoundToInt(currentDamage);
-        }
-    }
-    public float AttackSpeed => _config.attackCooldown - (_attackSpeedUpgradesCount * PlayerData.AttackSpeedBonusPerLevel);
-    public float Radius => _config.attackRadius + (_radiusUpgradesCount * PlayerData.RadiusBonusPerLevel);
-    public float Offset => _config.attackOffset + (_radiusUpgradesCount * PlayerData.OffsetBonusPerLevel);
-    public float CritChance => (_config.baseCritChance + PlayerData.CritChanceBonusPerLevel * _critChanceUpgradesCount) * 100;
-    public float CritDamage => _config.baseCritDamage + PlayerData.CritDamageBonusPerLevel * _critDamageUpgradesCount;
-    public float TotalDoubleStrikeChance => Mathf.Clamp(_config.baseReAttack + PlayerData.ReAttackBonusPerLevel * _reAttackUpgradesCount, 0f, 50f);
-
 
     private void Awake()
     {
@@ -78,20 +59,27 @@ public class PlayerAttack : MonoBehaviour
         isStoppingCompletely = Mathf.Abs(moveX) < 0.01f && Mathf.Abs(moveY) < 0.01f;
         if (isStoppingCompletely && _timeSinceStopped >= _delayBeforeAttack && Time.time >= _cooldownTimer)
         {
-            Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * Offset);
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, Radius, _enemyLayer);
+            Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * _stats.Offset);
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, _stats.Radius, _enemyLayer);
             if (hitEnemies.Length > 0)
             {
                 _currentComboCount = 0;
+                _anim.SetFloat("AttackSpeed", _stats.AnimSpeedMultiplier);
                 _anim.SetTrigger("Attack");
-                _cooldownTimer = Time.time + AttackSpeed;
+                _cooldownTimer = Time.time + _stats.AttackSpeedDelay;
             }
         }
     }
     public void DealDamageEvent()
     {
-        Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * Offset);
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, Radius, _enemyLayer);
+        UpdateSlashScale();
+        _slashAnimator.gameObject.SetActive(true);
+        _slashAnimator.speed = _stats.AnimSpeedMultiplier;
+        _slashAnimator.Play(_animationStateName, -1, 0f);
+        _slashAnimator.Update(0f);
+
+        Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * _stats.Offset);
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, _stats.Radius, _enemyLayer);
         AudioManager.Instance.PlayPlayerHit();
 
         foreach (Collider2D enemyCollider in hitEnemies)
@@ -105,7 +93,7 @@ public class PlayerAttack : MonoBehaviour
         if (_currentComboCount < _maxComboStrikes)
         {
             float roll = Random.Range(0f, 100f);
-            if (roll <= TotalDoubleStrikeChance)
+            if (roll <= _stats.TotalDoubleStrikeChance)
             {
                 StartCoroutine(ChainStrikeRoutine());
             }
@@ -114,50 +102,70 @@ public class PlayerAttack : MonoBehaviour
     private IEnumerator ChainStrikeRoutine()
     {
         if (!isStoppingCompletely) yield break;
-        
-        yield return new WaitForSeconds(_timeBetweenStrikes);
 
-        Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * Offset);
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, Radius, _enemyLayer);
+        float currentAnimSpeed = _anim.GetFloat("AttackSpeed");
+        if (currentAnimSpeed <= 0f) currentAnimSpeed = 1f;
+
+        float actualDelay = _timeBetweenStrikes / currentAnimSpeed;
+        yield return new WaitForSeconds(actualDelay);
+
+        Vector2 attackPoint = (Vector2)transform.position + (_lastDirection * _stats.Offset);
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, _stats.Radius, _enemyLayer);
 
         if (hitEnemies.Length > 0)
         {
             if (_anim != null)
             {
+                _anim.SetFloat("AttackSpeed", _stats.AnimSpeedMultiplier);
                 _anim.Play("Attack", 0, 0f);
-                _cooldownTimer = Time.time + AttackSpeed;
+                _cooldownTimer = Time.time + _stats.AttackSpeedDelay;
             }
         }
     }
     private void ApplySingleHit(EnemyController enemy)
     {
         bool isCrit = false;
-        int baseDamage = GetRandomDamage();
-        int finalDamage = CalculateDamage(baseDamage, out isCrit);
+        float baseDamage = GetRandomDamage();
+        float finalDamage = CalculateDamage(baseDamage, out isCrit);
         enemy.TakeDamage(finalDamage, isCrit);
+
+        if (_stats.Vampirism > 0)
+        {
+            float healAmount = finalDamage * (_stats.Vampirism / 100f);
+            _stats.Heal(healAmount);
+        }
     }
-    public int CalculateDamage(int damage, out bool isCrit)
+    public float CalculateDamage(float damage, out bool isCrit)
     {
         float roll = Random.Range(0f, 100f);
 
-        if (roll <= CritChance)
+        if (roll <= _stats.CritChance)
         {
             isCrit = true;
-            return (int)(damage * CritDamage);
+            return damage * _stats.CritDamage;
         }
 
         isCrit = false;
         return damage;
     }
-    public int GetRandomDamage()
+    public float GetRandomDamage()
     {
 
-        float spread = Damage * _damageSpreadPercent;
+        float spread = _stats.Damage * _damageSpreadPercent;
 
-        float minDamage = Damage - spread;
-        float maxDamage = Damage + spread;
+        float minDamage = _stats.Damage - spread;
+        float maxDamage = _stats.Damage + spread;
 
-        return Mathf.RoundToInt(Random.Range(minDamage, maxDamage));
+        return Random.Range(minDamage, maxDamage);
+    }
+    private void UpdateSlashScale()
+    {
+        if (_slashAnimator == null) return;
+
+        float progress = Mathf.InverseLerp(_config.attackRadius, _maxRadius, _stats.Radius);
+        float targetScale = Mathf.Lerp(_minScale, _maxScale, progress);
+
+        _slashAnimator.transform.localScale = new Vector3(targetScale, targetScale, 1f);
     }
 
     private void OnDrawGizmosSelected()
@@ -169,31 +177,8 @@ public class PlayerAttack : MonoBehaviour
 
         if (!Application.isPlaying) direction = Vector2.right;
 
-        Vector2 attackPoint = (Vector2)transform.position + (direction * Offset);
-        Gizmos.DrawWireSphere(attackPoint, Radius);
+        Vector2 attackPoint = (Vector2)transform.position + (direction * _stats.Offset);
+        Gizmos.DrawWireSphere(attackPoint, _stats.Radius);
     }
-    public void UpgradeDamage()
-    {
-        _damageUpgradesCount++;
-    }
-    public void UpgradeAttackSpeed()
-    {
-        _attackSpeedUpgradesCount++;
-    }
-    public void UpgradeRadius()
-    {
-        _radiusUpgradesCount++;
-    }
-    public void CritChanceUpgrade()
-    {
-        _critChanceUpgradesCount++;
-    }
-    public void CritDamageUpgrade()
-    {
-        _critDamageUpgradesCount++;
-    }
-    public void ReAttackUpgrade()
-    {
-        _reAttackUpgradesCount++;
-    }
+    
 }

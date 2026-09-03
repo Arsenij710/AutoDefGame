@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
-    public void PerformAoEAttack(Vector2 attackPoint, float radius, int damage, LayerMask playerLayer)
+    public void PerformAoEAttack(Vector2 attackPoint, float radius, float damage, LayerMask playerLayer)
     {
         Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint, radius, playerLayer);
 

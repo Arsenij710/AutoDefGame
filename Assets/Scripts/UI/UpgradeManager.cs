@@ -18,7 +18,6 @@ public class UpgradeManager : MonoBehaviour
     public static bool IsUpgradeOpen { get; private set; }
 
     private PlayerStats stats;
-    private PlayerAttack attack;
     private int rerollsAvailable = 1;
     void Awake()
     {
@@ -27,7 +26,6 @@ public class UpgradeManager : MonoBehaviour
             upgrade.currentCount = 0;
         }
         stats = FindFirstObjectByType<PlayerStats>();
-        attack = stats.GetComponent<PlayerAttack>();
     }
     public void OpenUpgradePanel()
     {
@@ -63,7 +61,7 @@ public class UpgradeManager : MonoBehaviour
             int randomIndex = Random.Range(0, availablePool.Count);
             UpgradeData selectedUpgrade = availablePool[randomIndex];
 
-            uiButtons[i].Setup(selectedUpgrade, ClosePanel, stats, attack);
+            uiButtons[i].Setup(selectedUpgrade, ClosePanel, stats);
 
             availablePool.RemoveAt(randomIndex);
         }
